@@ -1,11 +1,12 @@
 import axios from 'axios'
-import React, { FormEvent, useState } from 'react'
+import React, { FormEvent, useCallback, useEffect, useState } from 'react'
 import { CiSearch } from "react-icons/ci";
 import Header from '../comp/Header';
 import { FaGithub } from "react-icons/fa";
 import { FaFacebook } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+
 
 const Homepage: React.FC = () => {
 
@@ -23,6 +24,8 @@ const Homepage: React.FC = () => {
         }
 
     }
+
+
     return (
         <div className='bg-white h-auto flex p-5 flex-col'>
             <Header inputSee={seeInput} />

@@ -2,6 +2,8 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Header from '../comp/Header';
+import { FaArrowCircleUp } from "react-icons/fa";
+
 
 interface Author {
     name: string;
@@ -29,7 +31,6 @@ interface ResponseObject {
     oa_locations: any[];
     oa_locations_embargoed: any[];
     oa_status: string;
-    published_date: string;
     publisher: string;
     title: string;
     updated: string;
@@ -87,10 +88,8 @@ const SearchedItem: React.FC = () => {
                 const { results, total_results } = response.data;
 
                 const totalPages = Math.ceil(total_results / pageSize);
-
-                console.log(totalPages)
-
                 setDataObject(results);
+                localStorage.setItem('savedObject', JSON.stringify(results))
 
                 if (results.length === 0) {
                     setNoRes(true)
@@ -110,7 +109,7 @@ const SearchedItem: React.FC = () => {
             }
         }
         fetchPage(params.query, currentPage);
-    }, [params?.query, currentPage]);
+    }, [params?.query]);
 
     const nav = useNavigate()
 
@@ -165,7 +164,7 @@ const SearchedItem: React.FC = () => {
             alert("No search value");
             return;
         }
-        const pageStr = params?.page || '1'; 
+        const pageStr = params?.page || '1';
         const page = parseInt(pageStr);
         const baseURL = 'https://api.unpaywall.org/v2/search';
         const pageSize = 50;
@@ -184,13 +183,11 @@ const SearchedItem: React.FC = () => {
                 });
                 const { results, total_results } = response.data;
                 const totalPages = Math.ceil(total_results / pageSize);
-                console.log(totalPages);
                 setDataObject(results);
                 if (results.length === 0) {
                     setNoRes(true);
                     setNextPage(false)
                 } else {
-                    console.log("THERES ANOTHER PAGE!")
                     setNextPage(true)
                 }
                 setTotalPages(totalPages);
@@ -204,29 +201,123 @@ const SearchedItem: React.FC = () => {
     }, [params?.query, params?.page, nextPage]);
 
 
+    const [filterVal, setFilterVal] = useState<string>('')
 
+    const [DateVal, setDateVal] = useState<string | number>('')
+
+    const [startYear, setStartYear] = useState<number | null>(null);
+    const [endYear, setEndYear] = useState<number | null>(null);
+    const [noFoundOnDate, setNoFoundOnDate] = useState<boolean>(false);
+
+
+    const [hearChanges, setHear] = useState<boolean>(false)
+
+
+
+    const handleYearSelection = (year: number | string) => {
+        console.log('Filtering data with:', { year }); // Debug log
+
+        const savedItem = localStorage.getItem('savedObject');
+        const savedData: DataObject[] = savedItem ? JSON.parse(savedItem) : dataObject;
+
+        if (!savedData || savedData.length === 0) {
+            console.log('No data available for filtering.');
+            return;
+        }
+
+        const startYear = 2020;
+        const endYear = typeof year === 'number' ? year : parseInt(year, 10);
+
+        if(year != 'Any Time') {    
+            const filteredByDate = savedData.filter((itm: DataObject) => {
+                const itemYear = itm.response.year;
+                const updatedYear = new Date(itm.response.updated).getFullYear();
+    
+                // Check if either year falls within the range
+                return (itemYear >= startYear && itemYear <= endYear) ||
+                    (updatedYear >= startYear && updatedYear <= endYear);
+            });
+            console.log('Filtered data:', filteredByDate); // Debug log
+
+            // Only update state if there are results
+            if (filteredByDate.length > 0) {
+                setDataObject(filteredByDate);
+                console.log('Data object updated with filtered data.');
+            } else {
+                console.log('No matching data found for the selected year.');
+            }
+        } else {
+            setDataObject(savedData);
+        }
+
+      
+    };
+
+    const [slcVal, setSlcVal] = useState<number>(0)
+
+    function onchangeInput(params: number) {
+        setSlcVal(params)
+        handleYearSelection(params)
+    }
     return (
         <div className='h-auto'>
             <Header inputSee={seeInput} />
             <div className='mt-[80px] w-full h-[50px] border-b-[1px] border-b-[#e6e6e6] flex items-center justify-start px-3 font-semibold md:px-7'>
-                <div className='w-full max-w-[800px] flex justify-start items-center gap-[80px]'>
+                <div className='w-full max-w-[800px] flex justify-between items-center gap-[80px] md:justify-start md:max-w-[100%]'>
                     <div className='hidden md:block'>
                         Articles
                     </div>
-                    <div className='text-gray-400 text-[12px]'>
+                    <div className='text-gray-400 text-[12px] text-left'>
                         {dataObject != null && dataObject.length} resuls for "{params?.query}"
+                    </div>
+                    <div className='flex sm:hidden'>
+                        <select
+                        className='outline-none'
+                        value={slcVal}
+                        onChange={(e) => {onchangeInput(parseInt(e.target.value))}}
+                        >
+                            <option value="">YEAR</option>
+                            <option
+                                value="2024">Any Time</option>
+                            <option
+                                value="2024">2024</option>
+                            <option
+                                value="2023">2023</option>
+                            <option
+                                value="2022">2022</option>
+                            <option
+                                value="2021">2021</option>
+                            <option
+                                value="2020">2020</option>
+                        </select>
                     </div>
                 </div>
 
             </div>
-            <section className='flex w-full h-auto px-4 pt-6 gap-[50px]'>
-                <div className='hidden md:block'>
+            <section className='flex w-full h-auto px-4 pt-6 gap-[50px] items-start'>
+                <div className='hidden border-b-[1px] border-b-[#e6e6e6 h-auto pb-2  md:block'>
                     <select
+                        value={filterVal}
+                        onChange={(e) => { setFilterVal(e.target.value) }}
                         className='bg-[#e6e6e6]  py-1 px-2 rounded-lg'>
                         <option value="">Filter by</option>
                         <option value="Date">Date</option>
                     </select>
+                    {
+                        filterVal === 'Date' &&
+                        <div className='text-left pl-1 pt-2 flex flex-col gap-1'>
+                            {[2024, 2023, 2022, 2021, 2020, 'Any Time'].map(year => (
+                                <div
+                                    key={year}
+                                    onClick={() => handleYearSelection(year)}
+                                    className='cursor-pointer text-[#888] text-[13px] hover:underline hover:text-blue-400'>
+                                    Since {year}
+                                </div>
+                            ))}
+                        </div>
+                    }
                 </div>
+
                 <div className='flex flex-col gap-5 w-full justify-start items-start over'>
                     {
                         dataObject.length === 0 && noRes &&
@@ -250,16 +341,18 @@ const SearchedItem: React.FC = () => {
                                 <div className='font-semibold text-left cursor-pointer'>
                                     {itm.response.title}
                                 </div>
-                                <div className='text-gray-600 text-[14px]'>
+                                <div className='text-blue-400 text-[14px] break-words underline-offset-2 underline'>
                                     {itm.response.doi_url}
                                 </div>
                                 <div className='w-full flex  gap-1 pt-2 items-center'>
-                                    <div className='text-[#888] text-left text-[12px]'>
+                                    <span className='text-[#888] text-left text-[12px]'>
                                         publisher: {itm.response.publisher},
-                                    </div>
-                                    <div className='font-medium text-[13px]'>
-                                        {itm.response.year}
-                                    </div>
+                                        <span className='font-semibold text-[13px] pl-1'>
+                                            {itm.response.year}
+                                        </span>
+                                    </span>
+
+
                                 </div>
                                 <div className='text-[#888] text-left text-[12px]'>
                                     genre: {itm.response.genre}
@@ -273,7 +366,7 @@ const SearchedItem: React.FC = () => {
                                         <div className='text-gray-800 text-left text-[12px] font-semibold flex items-start justify-center'>
                                             authors:
                                         </div>
-                                        <div className='grid gap-1 grid-cols-6'>
+                                        <div className='flex flex-wrap gap-1'>
                                             {
                                                 arr.includes(itm?.response?.doi_url) ?
                                                     itm.response?.z_authors?.map((authors, idx) => (
@@ -325,6 +418,12 @@ const SearchedItem: React.FC = () => {
                         dataObject.length != 0 &&
                         <>
                             <div className='flex gap-2'>
+                                <div
+                                    onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                    className='h-[30px] text-gray-700 text-3xl flex items-center justify-center hover:text-gray-950 cursor-pointer'>
+                                    <FaArrowCircleUp />
+                                </div>
+
                                 {
                                     params?.page && parseFloat(params?.page) > 1 &&
                                     <div
@@ -332,7 +431,7 @@ const SearchedItem: React.FC = () => {
                                         <div
                                             onClick={controls.goBack}
 
-                                            className='bg-gray-700 text-[15px] px-3 py-1 rounded-md text-white cursor-pointer mb-5'>
+                                            className='bg-gray-700 text-[15px] px-3 py-1 rounded-md text-white cursor-pointer mb-5  hover:bg-gray-950'>
                                             ({params?.page && parseFloat(params?.page) - 1}) prev page
                                         </div>
                                     </div>
@@ -342,7 +441,7 @@ const SearchedItem: React.FC = () => {
 
                                     <div
                                         onClick={controls.goForward}
-                                        className='bg-gray-700 text-[15px] px-3 py-1 rounded-md text-white cursor-pointer mb-5'>
+                                        className='bg-gray-700 text-[15px] px-3 py-1 rounded-md text-white cursor-pointer mb-5 hover:bg-gray-950'>
                                         next page     ({params?.page && parseFloat(params?.page) + 1})
                                     </div>
                                 }
