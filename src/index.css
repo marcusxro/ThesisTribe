@@ -37,6 +37,7 @@ code {
 backdrop-filter: blur( 4px );
 -webkit-backdrop-filter: blur( 4px );
   align-items: center;
+  z-index: 200000;
 }
 
 
@@ -69,6 +70,7 @@ background:rgb(226, 226, 226, 72%);
   height: 100vh;
   z-index: 2000;
 }
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

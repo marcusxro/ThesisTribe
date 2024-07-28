@@ -28,7 +28,7 @@ const Homepage: React.FC = () => {
 
     return (
         <div className='bg-white h-auto flex p-5 flex-col'>
-            <Header inputSee={seeInput} />
+            <Header inputSee={seeInput} bookSee={false} />
             <form
                 className='w-[100%] h-[50vh] flex flex-col gap-5 self-center items-center justify-center border-b-[2px] border-b-[#e6e6e6]'
                 onSubmit={searchQuery}
