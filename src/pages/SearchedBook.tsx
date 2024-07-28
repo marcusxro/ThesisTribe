@@ -221,13 +221,13 @@ const SearchedBook = () => {
                                             For You
                                         </div>
 
-                                        <div className="embla z-0 relative less" ref={emblaRef}>
+                                        <div className="embla z-0 relative less p-5" ref={emblaRef}>
                                             <div className="embla__container">
                                                 {
                                                     bestSearch?.slice(0, 10).map((itm) => (
                                                         <div
-                                                        onClick={() => { window.open(`/searched-book/${itm?.id}`, '_blank') }}
-                                                         className="embla__slide flex gap-3 justify-around bg-red-400 " key={itm.id}>
+                                                            onClick={() => { window.open(`/searched-book/${itm?.id}`, '_blank') }}
+                                                            className="embla__slide flex gap-3 justify-around bg-red-400 " key={itm.id}>
                                                             <div className='rounded-xl overflow-hidden h-[100%] w-auto font-bold book'>
                                                                 <img src={itm.formats['image/jpeg']} alt={`${itm.title} cover`} className='w-full h-full object-contain mb-2' />
                                                             </div>
@@ -269,9 +269,9 @@ const SearchedBook = () => {
                                             xl:grid-cols-4 gap-5'>
                                             {
                                                 bookData?.results.map((book) => (
-                                                    <div 
-                                                    onClick={() => { window.open(`/searched-book/${book?.id}`, '_blank') }}
-                                                    className='flex flex-col h-full m-h-[500px] p-4 items-center justify-center' key={book.id}>
+                                                    <div
+                                                        onClick={() => { window.open(`/searched-book/${book?.id}`, '_blank') }}
+                                                        className='flex flex-col h-full m-h-[500px] p-4 items-center justify-center' key={book.id}>
                                                         <div
                                                             className='w-[90%] h-full  rounded-lg overflow-hidden flex items-center justify-center book cursor-pointer'>
                                                             {book.formats['image/jpeg'] && <img src={book.formats['image/jpeg']} alt={`${book.title} cover`} className='w-full h-full object-contain mb-2' />}
