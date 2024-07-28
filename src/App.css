@@ -1,7 +1,7 @@
 .book {
-  box-shadow: -1px -2px 24px -8px rgba(0,0,0,0.75);
--webkit-box-shadow: -1px -2px 24px -8px rgba(0,0,0,0.75);
--moz-box-shadow: -1px -2px 24px -8px rgba(0,0,0,0.75);
+  box-shadow: -1px -2px 24px -8px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: -1px -2px 24px -8px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: -1px -2px 24px -8px rgba(0, 0, 0, 0.75);
 }
 
 
@@ -14,7 +14,8 @@
   height: 40vh;
   z-index: 1;
   position: relative;
-  overflow: hidden; /* Ensure slides do not overflow */
+  overflow: hidden;
+  /* Ensure slides do not overflow */
 }
 
 .embla__container {
@@ -33,16 +34,30 @@
   padding: 20px;
   height: 100%;
   border-radius: 20px;
-  min-width: 50%; 
-  flex: 0 0 auto; 
+  min-width: 50%;
+  flex: 0 0 auto;
   margin-right: 10px;
 }
 
 
 @media only screen and (max-width: 800px) {
-  
-.embla__slide {
-  min-width: 35%; 
+
+  .embla__slide {
+    min-width: 35%;
+  }
+
 }
+
+
+@media only screen and (max-width: 600px) {
+
+  .embla__slide {
+    min-width: 20%;
+    height: 100%;
+  }
+
+  .embla {
+    height: 30vh;
+  }
 
 }

@@ -47,7 +47,7 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee }) => {
         <header className={`custom-pos py-5 ${inputSee && 'border-b-2 border-b-[#e6e6e6]'} ${bookSee && 'border-b-2 border-b-[#e6e6e6]'}`}>
             <div className='flex gap-5 w-full max-w-[800px] items-center'>
                 <div onClick={() => { nav('/') }}
-                    className={`font-bold text-1xl ${inputSee || bookSee &&  'hidden'} flex items-center gap-1 cursor-pointer md:flex`}><FaSwatchbook />ThesisTribe</div>
+                    className={`font-bold text-1xl ${bookSee &&  'hidden'} ${inputSee  &&  'hidden'}  flex items-center gap-1 cursor-pointer md:flex`}><FaSwatchbook />ThesisTribe</div>
                 {
                     inputSee &&
                     <form

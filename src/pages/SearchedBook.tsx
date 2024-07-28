@@ -90,7 +90,7 @@ const SearchedBook = () => {
                 setNext(response.data.next ? 'response' : null)
                 setPrev(response.data.previous ? 'response' : null)
 
-                console.log(response.data.previous)
+                console.log(response.data)
 
 
             })
@@ -125,20 +125,18 @@ const SearchedBook = () => {
             const addedPage = bookPage && parseInt(bookPage) + 1
             nav(`/search-book/${params?.bookQuery}/${addedPage}`)
             window.location.reload()
-            window.scrollTo(0,0)
+            window.scrollTo(0, 0)
         }
     }
     function prevFunc() {
         if (params) {
-            if(bookPage && parseInt(bookPage) === 0){
+            if (bookPage && parseInt(bookPage) === 0) {
                 return
             }
             const addedPage = bookPage && parseInt(bookPage) - 1
             nav(`/search-book/${params?.bookQuery}/${addedPage}`)
             window.location.reload()
-
-
-            window.scrollTo(0,0)
+            window.scrollTo(0, 0)
         }
     }
 
@@ -155,14 +153,22 @@ const SearchedBook = () => {
                     <div className='text-gray-400 text-[12px] text-left'>
 
 
-                        {pushedSearch ? 
-                        <div>
-                            Searching results for {params?.bookQuery}
-                        </div> :
-                        <div>
-                                                    {!pushedSearch && postCount} resuls for "{params?.bookQuery}"
-                        </div>
-                    }
+                        {pushedSearch ?
+                            <div>
+                                Searching results for {
+                                    params?.bookQuery && params?.bookQuery.length > 20 ?
+                                        params?.bookQuery?.slice(0, 20) + '...' :
+                                        params?.bookQuery
+                                }
+                            </div> :
+                            <div>
+                                {!pushedSearch && postCount} resuls for "{
+                                    params?.bookQuery && params?.bookQuery.length > 20 ?
+                                        params?.bookQuery?.slice(0, 20) + '...' :
+                                        params?.bookQuery
+                                }"
+                            </div>
+                        }
                     </div>
                     <div className='flex sm:hidden'>
                         <select
@@ -186,8 +192,6 @@ const SearchedBook = () => {
                         </select>
                     </div>
                 </div>
-
-
                 {
                     pushedSearch ?
                         <div className='h-[100vh] w-full flex items-center justify-center'>
@@ -206,100 +210,115 @@ const SearchedBook = () => {
                         </div>
                         :
                         <div className='flex flex-col h-full w-full classer'>
-                            <div className='w-full  max-w-[1200px] mx-auto text-xl font-bold px-4 py-2'>
-                                For You
-                            </div>
+                            {
+                                bestSearch.length === 0 ?
+                                    <div className='text-[#292929] w-full px-3'>
+                                        No results found!
+                                    </div>
+                                    :
+                                    <>
+                                        <div className='w-full  max-w-[1200px] mx-auto text-xl font-bold px-4 py-2'>
+                                            For You
+                                        </div>
 
-                            <div className="embla z-0 relative less" ref={emblaRef}>
-                                <div className="embla__container">
-                                    {
-                                        bestSearch?.slice(0, 10).map((itm) => (
-                                            <div className="embla__slide flex gap-3 justify-around bg-red-400 " key={itm.id}>
-                                                <div className='rounded-xl overflow-hidden h-[100%] w-auto font-bold book'>
-                                                    <img src={itm.formats['image/jpeg']} alt={`${itm.title} cover`} className='w-full h-full object-contain mb-2' />
-                                                </div>
-                                                <div className='h-[100%] flex flex-col justify-between'>
-                                                    <div className='text-white font-bold w-[200px] h-auto flex items-start justify-start'>
-                                                        {
-                                                            itm.title
-                                                        }
-                                                    </div>
-                                                    <div className='flex flex-col text-white'>
-
-                                                        <div className='text-white flex gap-1 justify-between'>
-                                                            Downloads:
-                                                            <span className='gap-1 flex items-center justify-center bg-gray-700 text-white py-[1px] px-2 rounded-full'>
-                                                                <span className='pb-[1px] text-[12px] flex items-center justify-center'><FaDownload /></span>
-                                                                {itm.download_count}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        ))
-                                    }
-                                </div>
-                            </div>
-
-                            <div className='w-full  max-w-[1200px] mx-auto text-xl font-bold px-4 py-2'>
-                                Browse
-                            </div>
-                            <div className='w-full h-full
-                                max-w-[1200px]
-                                text-black p-2 grid grid-cols-2 
-                                mx-auto
-                                sm:grid-cols-2  
-                                md:grid-cols-3 
-                                lg:grid-cols-4 
-                                xl:grid-cols-4 gap-5'>
-                                {
-                                    bookData?.results.map((book) => (
-                                        <div className='flex flex-col  p-4 h-[auto] items-center justify-center' key={book.id}>
-                                            <div
-                                                className='w-[90%] h-full  rounded-lg overflow-hidden flex items-center justify-center book cursor-pointer'>
-                                                {book.formats['image/jpeg'] && <img src={book.formats['image/jpeg']} alt={`${book.title} cover`} className='w-full h-full object-contain mb-2' />}
-                                            </div>
-                                            <h2 className='text-lg font-bold text-center w-full'>
+                                        <div className="embla z-0 relative less" ref={emblaRef}>
+                                            <div className="embla__container">
                                                 {
-                                                    book.title.length > 30 ?
-                                                        book.title.slice(0, 30) + '...' :
-                                                        book.title
+                                                    bestSearch?.slice(0, 10).map((itm) => (
+                                                        <div
+                                                        onClick={() => { window.open(`/searched-book/${itm?.id}`, '_blank') }}
+                                                         className="embla__slide flex gap-3 justify-around bg-red-400 " key={itm.id}>
+                                                            <div className='rounded-xl overflow-hidden h-[100%] w-auto font-bold book'>
+                                                                <img src={itm.formats['image/jpeg']} alt={`${itm.title} cover`} className='w-full h-full object-contain mb-2' />
+                                                            </div>
+                                                            <div className='h-[100%] flex flex-col justify-between'>
+                                                                <div className='text-white font-bold w-[200px] h-auto flex items-start justify-start'>
+                                                                    {
+                                                                        itm.title.length > 30 ?
+                                                                            itm.title.slice(0, 60) + '...' :
+                                                                            itm.title
+                                                                    }
+                                                                </div>
+                                                                <div className='flex flex-col text-white'>
+                                                                    <div className='text-white flex gap-1 justify-between'>
+                                                                        Downloads:
+                                                                        <span className='gap-1 flex items-center justify-center bg-gray-700 text-white py-[1px] px-2 rounded-full'>
+                                                                            <span className='pb-[1px] text-[12px] flex items-center justify-center'><FaDownload /></span>
+                                                                            {itm.download_count}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    ))
                                                 }
-                                            </h2>
+                                            </div>
                                         </div>
-                                    ))
-                                }
-                            </div>
 
-                            <div className='flex gap-2 w-full  max-w-[1200px]  mx-auto py-4 px-5'>
-                                <div
-                                    onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                                    className='h-[30px] text-gray-700 text-3xl flex items-center justify-center hover:text-gray-950 cursor-pointer'>
-                                    <FaArrowCircleUp />
-                                </div>
-
-                                {
-                                    prev &&
-                                    <div
-                                        className='flex gap-2'>
-                                        <div
-                                             onClick={()=>{prevFunc()}}
-
-                                            className='bg-gray-700 text-[15px] px-3 py-1 rounded-md text-white cursor-pointer mb-5  hover:bg-gray-950'>
-                                            ({bookPage && parseFloat(bookPage) - 1}) prev page
+                                        <div className='w-full  max-w-[1200px] mx-auto text-xl font-bold px-4 py-2'>
+                                            Browse
                                         </div>
-                                    </div>
-                                }
-                                {
-                                    nextBtn &&
-                                    <div
-                                        onClick={()=>{nextFunc()}}
-                                        className='bg-gray-700 text-[15px] px-3 py-1 rounded-md text-white cursor-pointer mb-5 hover:bg-gray-950'>
-                                        next page     ({bookPage && parseFloat(bookPage) + 1})
-                                    </div>
-                                }
-                            </div>
+                                        <div className='w-full h-full
+                                            max-w-[1200px]
+                                            text-black p-2 grid grid-cols-2 
+                                            mx-auto
+                                            sm:grid-cols-2  
+                                            md:grid-cols-3 
+                                            lg:grid-cols-4 
+                                            xl:grid-cols-4 gap-5'>
+                                            {
+                                                bookData?.results.map((book) => (
+                                                    <div 
+                                                    onClick={() => { window.open(`/searched-book/${book?.id}`, '_blank') }}
+                                                    className='flex flex-col h-full m-h-[500px] p-4 items-center justify-center' key={book.id}>
+                                                        <div
+                                                            className='w-[90%] h-full  rounded-lg overflow-hidden flex items-center justify-center book cursor-pointer'>
+                                                            {book.formats['image/jpeg'] && <img src={book.formats['image/jpeg']} alt={`${book.title} cover`} className='w-full h-full object-contain mb-2' />}
+                                                        </div>
+                                                        <h2 className='text-sm mt-2 font-bold text-center w-full md:text-md'>
+                                                            {
+                                                                book.title.length > 30 ?
+                                                                    book.title.slice(0, 30) + '...' :
+                                                                    book.title
+                                                            }
+                                                        </h2>
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
+
+                                        <div className='flex gap-2 w-full  max-w-[1200px]  mx-auto py-4 px-5'>
+                                            <div
+                                                onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                                className='h-[30px] text-gray-700 text-3xl flex items-center justify-center hover:text-gray-950 cursor-pointer'>
+                                                <FaArrowCircleUp />
+                                            </div>
+
+                                            {
+                                                prev &&
+                                                <div
+                                                    className='flex gap-2'>
+                                                    <div
+                                                        onClick={() => { prevFunc() }}
+
+                                                        className='bg-gray-700 text-[15px] px-3 py-1 rounded-md text-white cursor-pointer mb-5  hover:bg-gray-950'>
+                                                        ({bookPage && parseFloat(bookPage) - 1}) prev page
+                                                    </div>
+                                                </div>
+                                            }
+                                            {
+                                                nextBtn &&
+                                                <div
+                                                    onClick={() => { nextFunc() }}
+                                                    className='bg-gray-700 text-[15px] px-3 py-1 rounded-md text-white cursor-pointer mb-5 hover:bg-gray-950'>
+                                                    next page     ({bookPage && parseFloat(bookPage) + 1})
+                                                </div>
+                                            }
+                                        </div>
+                                    </>
+                            }
+
                         </div>
                 }
             </div>
