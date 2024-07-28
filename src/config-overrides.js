@@ -1,7 +1,6 @@
-const { override, addBabelPlugins } = require('customize-cra');
+const { override, addPostcssPlugins } = require('customize-cra');
+const tailwindcss = require('tailwindcss');
 
 module.exports = override(
-  ...addBabelPlugins(
-    // Add your Babel plugins here
-  ),
+  addPostcssPlugins([tailwindcss])
 );
