@@ -261,7 +261,7 @@ const SearchedItem: React.FC = () => {
     }
     return (
         <div className='h-auto'>
-            <Header inputSee={seeInput} />
+            <Header inputSee={true} bookSee={false} />
             <div className='mt-[80px] w-full h-[50px] border-b-[1px] border-b-[#e6e6e6] flex items-center justify-start px-3 font-semibold md:px-7'>
                 <div className='w-full max-w-[800px] flex justify-between items-center gap-[80px] md:justify-start md:max-w-[100%]'>
                     <div className='hidden md:block'>
