@@ -83,7 +83,7 @@ background:rgb(226, 226, 226, 72%);
   width: 100%;
   z-index: 20000000;
   transform: translate(-50%,-50%);
-  height: 100vh;
+  height: 100dvh;
   width: 100%;
   display: flex;
   align-items: center;
