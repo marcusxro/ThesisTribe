@@ -95,6 +95,12 @@ const ViewBook: React.FC = () => {
         setErrorOnLoad(true)
     }
 
+    
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+    const targetUrl = bookData?.results[0]?.formats['text/html'];
+    const proxiedUrl = `${proxyUrl}${targetUrl}`;
+
+
     return (
         <div className='relative'>
             <Header inputSee={false} bookSee={true} />
