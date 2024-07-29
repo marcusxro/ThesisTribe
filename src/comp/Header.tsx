@@ -28,26 +28,27 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee }) => {
             window.scrollTo(0, 0)
         }
     }
+    const [isChanged, setIsChanged] = useState<boolean>(false)
+    const inputSearchValueForBooks = !inputVal && !isChanged ? params?.bookQuery : inputVal
 
     function searchBookQuery(e: FormEvent) {
         e.preventDefault()
-        if (inputVal === '' && !params?.query) {
+        if (inputVal === '' && !params?.bookQuery) {
             return alert("Please search something")
         } else {
-            nav(`/search-book/${!inputVal ? params?.bookQuery : inputVal}/1`)
+            nav(`/search-book/${inputSearchValueForBooks}/1`)
             window.scrollTo(0, 0)
         }
     }
 
-    const [isChanged, setIsChanged] = useState<boolean>(false)
+
     const inputSearchValue = !inputVal && !isChanged ? params?.query : inputVal
-    const inputSearchValueForBooks = !inputVal && !isChanged ? params?.bookQuery : inputVal
 
     return (
         <header className={`custom-pos py-5 ${inputSee && 'border-b-2 border-b-[#e6e6e6]'} ${bookSee && 'border-b-2 border-b-[#e6e6e6]'}`}>
             <div className='flex gap-5 w-full max-w-[800px] items-center'>
                 <div onClick={() => { nav('/') }}
-                    className={`font-bold text-1xl ${bookSee &&  'hidden'} ${inputSee  &&  'hidden'}  flex items-center gap-1 cursor-pointer md:flex`}><FaSwatchbook />ThesisTribe</div>
+                    className={`font-bold text-1xl ${bookSee && 'hidden'} ${inputSee && 'hidden'}  flex items-center gap-1 cursor-pointer md:flex`}><FaSwatchbook />ThesisTribe</div>
                 {
                     inputSee &&
                     <form
@@ -65,7 +66,7 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee }) => {
                             type="text" />
                     </form>
                 }
-                    {
+                {
                     bookSee &&
                     <form
                         onSubmit={searchBookQuery}
@@ -120,8 +121,8 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee }) => {
                         className='bg-[#292929] text-white
                      py-1 px-5 rounded-3xl cursor-pointer  hover:bg-gray-700 
                      flex gap-1 items-center text-center'><IoMdContact />Contact</div>
-                     <div
-                       onClick={() => { nav('/book-finder/') }}
+                    <div
+                        onClick={() => { nav('/book-finder/') }}
                         className='bg-[#292929] text-white
                      py-1 px-5 rounded-3xl cursor-pointer  hover:bg-gray-700 
                      flex gap-1 items-center text-center'><IoMdContact />Books</div>
