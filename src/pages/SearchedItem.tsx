@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Header from '../comp/Header';
 import { FaArrowCircleUp } from "react-icons/fa";
+import CiteComp from '../comp/CiteComp';
 
 
 interface Author {
@@ -228,11 +229,11 @@ const SearchedItem: React.FC = () => {
         const startYear = 2020;
         const endYear = typeof year === 'number' ? year : parseInt(year, 10);
 
-        if(year != 'Any Time') {    
+        if (year != 'Any Time') {
             const filteredByDate = savedData.filter((itm: DataObject) => {
                 const itemYear = itm.response.year;
                 const updatedYear = new Date(itm.response.updated).getFullYear();
-    
+
                 // Check if either year falls within the range
                 return (itemYear >= startYear && itemYear <= endYear) ||
                     (updatedYear >= startYear && updatedYear <= endYear);
@@ -250,8 +251,9 @@ const SearchedItem: React.FC = () => {
             setDataObject(savedData);
         }
 
-      
+
     };
+
 
     const [slcVal, setSlcVal] = useState<number>(0)
 
@@ -259,9 +261,24 @@ const SearchedItem: React.FC = () => {
         setSlcVal(params)
         handleYearSelection(params)
     }
+
+    const [openCiteModal, setOpenCiteModal] = useState<boolean>(false)
+
+    const [citeDetails, setCiteDetails] = useState<ResponseObject | null>(null);
+
+    const openModalWithDetails = (prmsBool: boolean, details: ResponseObject | null) => {
+        setCiteDetails(details);
+        setOpenCiteModal(prmsBool);
+    };
+    
+
     return (
         <div className='h-auto'>
             <Header inputSee={true} bookSee={false} />
+            {
+                openCiteModal && citeDetails &&
+                <CiteComp closer={setOpenCiteModal} citeDetails={citeDetails} />
+            }
             <div className='mt-[80px] w-full h-[50px] border-b-[1px] border-b-[#e6e6e6] flex items-center justify-start px-3 font-semibold md:px-7'>
                 <div className='w-full max-w-[800px] flex justify-between items-center gap-[80px] md:justify-start md:max-w-[100%]'>
                     <div className='hidden md:block'>
@@ -272,9 +289,9 @@ const SearchedItem: React.FC = () => {
                     </div>
                     <div className='flex sm:hidden'>
                         <select
-                        className='outline-none'
-                        value={slcVal}
-                        onChange={(e) => {onchangeInput(parseInt(e.target.value))}}
+                            className='outline-none'
+                            value={slcVal}
+                            onChange={(e) => { onchangeInput(parseInt(e.target.value)) }}
                         >
                             <option value="">YEAR</option>
                             <option
@@ -410,6 +427,16 @@ const SearchedItem: React.FC = () => {
                                         </div>
                                     </div>
                                 }
+                                <div
+                                    onClick={(e) => { e.stopPropagation() }}
+                                    className='flex gap-1 text-[13px] mt-2'>
+                                    <div
+                                onClick={() => { openModalWithDetails(true, itm.response) }}
+                                        className='bg-gray-700 text-[13px] px-1 rounded-md text-white cursor-pointer'>
+                                        Cite</div>
+                                    <div className='bg-gray-700 text-[13px] px-1 rounded-md text-white cursor-pointer'>
+                                        Save</div>
+                                </div>
                             </div>
                         ))
                     }

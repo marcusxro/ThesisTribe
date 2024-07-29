@@ -185,13 +185,13 @@ const SearchedBook = () => {
             window.open(`/searched-book/${stringSearch}?bookQuery=${encodedBookQuery}`, '_blank');
         }
     }
-    
+
 
     return (
         <div className='w-full h-auto'>
             <Header inputSee={false} bookSee={true} />
             <div className='w-full h-full'>
-                <div className='w-full max-w-[800px] font-semibold px-8 mb-1 border-b-[1px] border-b-[#e6e6e6]  py-3 mt-[80px] flex justify-between items-center gap-[80px] md:justify-start md:max-w-[100%]'>
+                <div className='w-full max-w-[800px] font-semibold px-8 mb-1 border-b-[1px] border-b-[#e6e6e6]  py-3 mt-[80px] flex justify-between items-center gap-[80px] lg:justify-start md:max-w-[100%]'>
                     <div className='hidden md:block'>
                         Books
                     </div>
@@ -205,7 +205,8 @@ const SearchedBook = () => {
                                 }
                             </div> :
                             <div>
-                                {!pushedSearch && postCount} resuls for "{
+                                {!pushedSearch && postCount} 
+                                {bookData?.results && bookData?.results.length > 1 ? 'results' : 'result'} for "{
                                     params?.bookQuery && params?.bookQuery.length > 20 ?
                                         params?.bookQuery?.slice(0, 20) + '...' :
                                         params?.bookQuery
@@ -213,7 +214,7 @@ const SearchedBook = () => {
                             </div>
                         }
                     </div>
-                    <div className='flex md:hidden bg-transparent'>
+                    <div className='flex lg:hidden bg-transparent'>
                         <select
                             className='outline-none'
                             value={slcVal}
@@ -222,14 +223,12 @@ const SearchedBook = () => {
                             <option value="">Sort by</option>
                             <option
                                 value="">None</option>
-                    <option value="ascending">Most Popular</option>
-                    <option value="descending">Least Popular</option>
+                            <option value="ascending">Most Popular</option>
+                            <option value="descending">Least Popular</option>
                         </select>
                     </div>
                 </div>
-                {/* <div className='py-2 w-full'>
-                    asdsa
-                </div> */}
+
                 {
                     pushedSearch ?
                         <div className='h-[100vh] w-full flex items-center justify-center'>
@@ -247,8 +246,8 @@ const SearchedBook = () => {
                             </svg>
                         </div>
                         :
-                        <div className='flex px-5'>
-                            <div className='pt-4 hidden md:flex items-start'>
+                        <div className='flex px-5 flex-col lg:flex-row'>
+                            <div className='pt-4 hidden lg:flex items-start ml-auto'>
                                 <select
                                     className='outline-none bg-transparent font-bold'
                                     value={slcVal}
@@ -282,7 +281,7 @@ const SearchedBook = () => {
                                                             {
                                                                 bestSearch.length != null && bestSearch.length >= 10 && bestSearch?.slice(0, 10).map((itm) => (
                                                                     <div
-                                                                        onClick={() => { visitByID(itm.id)}}
+                                                                        onClick={() => { visitByID(itm.id) }}
                                                                         className="embla__slide flex gap-3 justify-around bg-gray-300 text-black" key={itm.id}>
                                                                         <div className='rounded-xl overflow-hidden h-[100%] w-auto font-bold book'>
                                                                             <img src={itm.formats['image/jpeg']} alt={`${itm.title} cover`} className='w-full h-full object-contain mb-2' />
@@ -327,13 +326,13 @@ const SearchedBook = () => {
                                                 {
                                                     bookData?.results.map((book) => (
                                                         <div
-                                                        onClick={() => { visitByID(book.id)}}
+                                                            onClick={() => { visitByID(book.id) }}
                                                             className='flex flex-col h-full m-h-[500px] p-4 items-center justify-center' key={book.id}>
                                                             <div
                                                                 className='w-[90%] h-full  rounded-lg overflow-hidden flex items-center justify-center book cursor-pointer'>
                                                                 {book.formats['image/jpeg'] && <img src={book.formats['image/jpeg']} alt={`${book.title} cover`} className='w-full h-full object-contain mb-2' />}
                                                             </div>
-                                                            <h2 className='text-sm mt-2 font-bold text-center w-full md:text-md'>
+                                                            <h2 className='text-[10px] mt-2 font-bold text-center w-full md:text-md lg:text-lg'>
                                                                 {
                                                                     book.title.length > 30 ?
                                                                         book.title.slice(0, 30) + '...' :

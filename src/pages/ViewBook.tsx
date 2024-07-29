@@ -347,7 +347,7 @@ const ViewBook: React.FC = () => {
             <div>
                 <div className='flex flex-col h-full w-full classer'>
                     {
-                       bookData != null && pushedSearch && bookData?.results && bookData?.results.length > 0 ?
+                   filteredBooks && filteredBooks?.length === 0 &&  bookData != null && pushedSearch && bookData?.results && bookData?.results.length > 0 ?
                             <div className='w-full h-[50vh] flex items-center justify-center max-w-[1200px] mx-auto  flex-col gap 1'>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 44 44" stroke="#000">
                                     <g fill="none" fill-rule="evenodd" stroke-width="2">
@@ -371,7 +371,7 @@ const ViewBook: React.FC = () => {
                                     filteredBooks?.length === 0 && !pushedSearch ?
                                         <div className='w-full h-full p-4'>
                                             <div className='font-bold m-3 text-[#292929] w-full h-[50vh]  max-w-[1200px] mx-auto mt-3  rounded-lg px-3 flex items-center justify-center bg-gray-300'>
-                                                No results found!
+                                               No relevant results found
                                             </div>
                                         </div>
                                         :
