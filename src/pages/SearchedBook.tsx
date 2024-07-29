@@ -211,51 +211,54 @@ const SearchedBook = () => {
                         :
                         <div className='flex flex-col h-full w-full classer'>
                             {
-                                bestSearch.length === 0 ?
+                                bestSearch.length === null ?
                                     <div className='text-[#292929] w-full px-3'>
                                         No results found!
                                     </div>
                                     :
                                     <>
-                                        <div className='w-full  max-w-[1200px] mx-auto text-xl font-bold px-4 py-2'>
-                                            For You
-                                        </div>
-
-                                        <div className="embla z-0 relative less p-5" ref={emblaRef}>
-                                            <div className="embla__container">
-                                                {
-                                                    bestSearch?.slice(0, 10).map((itm) => (
-                                                        <div
-                                                            onClick={() => { window.open(`/searched-book/${itm?.id}`, '_blank') }}
-                                                            className="embla__slide flex gap-3 justify-around bg-red-400 " key={itm.id}>
-                                                            <div className='rounded-xl overflow-hidden h-[100%] w-auto font-bold book'>
-                                                                <img src={itm.formats['image/jpeg']} alt={`${itm.title} cover`} className='w-full h-full object-contain mb-2' />
-                                                            </div>
-                                                            <div className='h-[100%] flex flex-col justify-between'>
-                                                                <div className='text-white font-bold w-[200px] h-auto flex items-start justify-start'>
-                                                                    {
-                                                                        itm.title.length > 30 ?
-                                                                            itm.title.slice(0, 60) + '...' :
-                                                                            itm.title
-                                                                    }
-                                                                </div>
-                                                                <div className='flex flex-col text-white'>
-                                                                    <div className='text-white flex gap-1 justify-between'>
-                                                                        Downloads:
-                                                                        <span className='gap-1 flex items-center justify-center bg-gray-700 text-white py-[1px] px-2 rounded-full'>
-                                                                            <span className='pb-[1px] text-[12px] flex items-center justify-center'><FaDownload /></span>
-                                                                            {itm.download_count}
-                                                                        </span>
+                                        {
+                                            bestSearch.length >= 10 &&
+                                            <>
+                                                <div className='w-full  max-w-[1200px] mx-auto text-xl font-bold px-4 py-2'>
+                                                    For You
+                                                </div>
+                                                <div className="embla z-0 relative less p-5" ref={emblaRef}>
+                                                    <div className="embla__container">
+                                                        {
+                                                            bestSearch.length != null && bestSearch.length >= 10 && bestSearch?.slice(0, 10).map((itm) => (
+                                                                <div
+                                                                    onClick={() => { window.open(`/searched-book/${itm?.id}`, '_blank') }}
+                                                                    className="embla__slide flex gap-3 justify-around bg-red-400 " key={itm.id}>
+                                                                    <div className='rounded-xl overflow-hidden h-[100%] w-auto font-bold book'>
+                                                                        <img src={itm.formats['image/jpeg']} alt={`${itm.title} cover`} className='w-full h-full object-contain mb-2' />
+                                                                    </div>
+                                                                    <div className='h-[100%] flex flex-col justify-between'>
+                                                                        <div className='text-white font-bold w-[200px] h-auto flex items-start justify-start'>
+                                                                            {
+                                                                                itm.title.length > 30 ?
+                                                                                    itm.title.slice(0, 60) + '...' :
+                                                                                    itm.title
+                                                                            }
+                                                                        </div>
+                                                                        <div className='flex flex-col text-white'>
+                                                                            <div className='text-white flex gap-1 justify-between'>
+                                                                                Downloads:
+                                                                                <span className='gap-1 flex items-center justify-center bg-gray-700 text-white py-[1px] px-2 rounded-full'>
+                                                                                    <span className='pb-[1px] text-[12px] flex items-center justify-center'><FaDownload /></span>
+                                                                                    {itm.download_count}
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </div>
 
-                                                    ))
-                                                }
-                                            </div>
-                                        </div>
-
+                                                            ))
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </>
+                                        }
                                         <div className='w-full  max-w-[1200px] mx-auto text-xl font-bold px-4 py-2'>
                                             Browse
                                         </div>

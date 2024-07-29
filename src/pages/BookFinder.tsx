@@ -74,7 +74,7 @@ const BookFinder: React.FC = () => {
             <div className='w-full min-h-[400px] h-[80vh] flex items-center flex-col justify-center gap-5 md:h-[50vh]'>
                 <div>
                     <h1 className='text-[#292929] text-[3rem] font-bold text-center'>
-                        BOOKFINDER
+                        BOOK-FINDER
                     </h1>
                     <h3 className='text-[#292929] text-md font-medium text-center'>
                         Your gateway to 74,000+ educational books and resources

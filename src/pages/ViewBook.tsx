@@ -82,8 +82,19 @@ const ViewBook: React.FC = () => {
     }, [bookData])
 
     const [seeAll, setSeeAll] = useState<boolean>(false)
-
     const [isRead, setIsRead] = useState<boolean>(false)
+
+    const [onLoad, setOnLoad] = useState<boolean>(true)
+    const [errorOnLoad, setErrorOnLoad] = useState<boolean>(false)
+
+    function handleLoad() {
+        setOnLoad(false)
+    }
+
+    function handleError() {
+        setErrorOnLoad(true)
+    }
+
     return (
         <div className='relative'>
             <Header inputSee={false} bookSee={true} />
@@ -108,10 +119,10 @@ const ViewBook: React.FC = () => {
                 }
 
                 {
-                    bookData?.results.map((itm) => (
-                        <div 
-                        key={itm.id}
-                        className='gap-8 w-full h-full flex flex-col max-w-[1200px] mx-auto md:flex-row bg-red-300 p-5 rounded-lg text-black'>
+                  bookData != null &&  bookData?.results?.map((itm) => (
+                        <div
+                            key={itm.id}
+                            className='gap-8 w-full h-full flex flex-col max-w-[1200px] mx-auto md:flex-row bg-gray-300 p-5 rounded-lg text-black'>
                             <div className='book rounded-lg w-full max-w-[200px] h-[100%] max-h-[600px] overflow-hidden md:max-w-[300px]'>
                                 <img
                                     className='h-full w-full object-contain'
@@ -130,9 +141,9 @@ const ViewBook: React.FC = () => {
                                                 <>
                                                     {
                                                         itm.subjects && itm.subjects.map((z) => (
-                                                            <div 
-                                                            key={z}
-                                                            className='text-[12px] bg-[#292929] py-1 px-2 text-white rounded-lg'>
+                                                            <div
+                                                                key={z}
+                                                                className='text-[12px] bg-[#292929] py-1 px-2 text-white rounded-lg'>
                                                                 {z}
                                                             </div>
                                                         ))
@@ -143,8 +154,8 @@ const ViewBook: React.FC = () => {
                                                     {
                                                         itm.subjects && itm.subjects.slice(0, 5).map((z) => (
                                                             <div
-                                                            key={z}
-                                                             className='text-[12px] bg-[#292929] py-1 px-2 text-white rounded-lg'>
+                                                                key={z}
+                                                                className='text-[12px] bg-[#292929] py-1 px-2 text-white rounded-lg'>
                                                                 {z}
                                                             </div>
                                                         ))
@@ -248,15 +259,36 @@ const ViewBook: React.FC = () => {
                 isRead &&
                 <div
                     onClick={() => { setIsRead(false) }}
-                    className='modalPos rounded-lg overflow-hidden'>
+                    className='modalPos rounded-lg overflow-hidden flex flex-col'>
                     <div
-                        onClick={() => { setIsRead(false);}}
+                        onClick={() => { setIsRead(false); }}
                         className='absolute cursor-pointer top-1 left-1 bg-[#292929] w-[30px] h-[30px] rounded-full text-white flex items-center justify-center'>
                         X
                     </div>
+                    {
+                        onLoad &&
+                        <div className='w-full h-full flex items-center justify-center'>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 44 44" stroke="#000">
+                                <g fill="none" fill-rule="evenodd" stroke-width="2">
+                                    <circle cx="22" cy="22" r="1">
+                                        <animate attributeName="r" begin="0s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite" />
+                                        <animate attributeName="stroke-opacity" begin="0s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite" />
+                                    </circle>
+                                    <circle cx="22" cy="22" r="1">
+                                        <animate attributeName="r" begin="-0.9s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite" />
+                                        <animate attributeName="stroke-opacity" begin="-0.9s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite" />
+                                    </circle>
+                                </g>
+                            </svg>
+                        </div>
+                    }
                     <embed
                         onClick={(e) => { e.stopPropagation() }}
-                        className='bg-[#e6e6e6] w-full h-full z-10 text-white' src={bookData?.results[0]?.formats['text/html']} type="" />
+                        className='bg-[#e6e6e6] w-full h-full z-10 text-white'
+                        src={bookData?.results[0]?.formats['text/html']?.replace('http://', 'https://')}
+                        onLoad={handleLoad}
+                        onError={handleError}
+                        type="" />
                 </div>
             }
         </div>
