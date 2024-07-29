@@ -105,3 +105,9 @@ background:rgb(226, 226, 226, 72%);
   height: 90%;
   border-radius: 20px;
 }
+
+
+.changeFont {
+  color: #888;
+  font-family: 'Times New Roman', Times, serif;
+}
