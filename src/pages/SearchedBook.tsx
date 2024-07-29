@@ -107,7 +107,7 @@ const SearchedBook = () => {
             const filterBooks = bookData.results.filter((itm) =>
                 itm.title.toLowerCase().includes(bookQuery?.toLowerCase() || "")
             );
-            if(filterBooks.length >= 10) {
+            if (filterBooks.length >= 10) {
                 setBestSearch(filterBooks.slice(0, 10))
             }
         }
@@ -143,6 +143,42 @@ const SearchedBook = () => {
     }
 
 
+    const [slcVal, setSlcVal] = useState<string>("")
+
+    useEffect(() => {
+        if (!bookQuery || !bookPage && slcVal) {
+            return
+        }
+        setPushedSearch(true)
+
+        const headers = {
+            "x-apihub-key": "K1rKPUJ4N7xguMsHd6qCqyM7k5gJNo6ytuw6vTmwFQmt44YaM6",
+            "x-apihub-host": "Ebook-Metadata-API.allthingsdev.co",
+            "x-apihub-endpoint": "b6b8c575-3f0d-43cd-8924-26b2cf72e37d"
+        };
+
+        console.log('bookpage:', bookPage)
+
+        axios.get(`https://Ebook-Metadata-API.proxy-production.allthingsdev.co/books/?search=${bookQuery}&page=${bookPage}&sort=${slcVal}`, { headers })
+            .then((response) => {
+                setBookData(response.data)
+                setPushedSearch(false)
+                setPostCOunt(response.data.count)
+
+                setNext(response.data.next ? 'response' : null)
+                setPrev(response.data.previous ? 'response' : null)
+
+                console.log(response.data)
+
+
+            })
+            .catch((error) => {
+                console.error(error)
+            });
+
+    }, [slcVal])
+
+
     return (
 
         <div className='w-full h-auto'>
@@ -176,28 +212,22 @@ const SearchedBook = () => {
                     <div className='flex sm:hidden'>
                         <select
                             className='outline-none'
-                        // value={slcVal}
-                        // onChange={(e) => {onchangeInput(parseInt(e.target.value))}}
+                            value={slcVal}
+                            onChange={(e) => { setSlcVal(e.target.value) }}
                         >
-                            <option value="">YEAR</option>
+                            <option value="">Sort</option>
                             <option
-                                value="2024">Any Time</option>
+                                value="">None</option>
                             <option
-                                value="2024">2024</option>
+                                value="ascending">Popular</option>
                             <option
-                                value="2023">2023</option>
-                            <option
-                                value="2022">2022</option>
-                            <option
-                                value="2021">2021</option>
-                            <option
-                                value="2020">2020</option>
+                                value="descending">Unpopular</option>
                         </select>
                     </div>
                 </div>
-                <div className='py-2 w-full'>
+                {/* <div className='py-2 w-full'>
                     asdsa
-                </div>
+                </div> */}
                 {
                     pushedSearch ?
                         <div className='h-[100vh] w-full flex items-center justify-center'>
@@ -217,14 +247,16 @@ const SearchedBook = () => {
                         :
                         <div className='flex flex-col h-full w-full classer'>
                             {
-                                bestSearch.length === null ?
-                                    <div className='text-[#292929] w-full px-3'>
+                                 bookData?.results.length === 0 ?
+                                  <div className='w-full h-full p-4'>
+                                      <div className='font-bold m-3 text-[#292929] w-full h-[50vh]  max-w-[1200px] mx-auto mt-3  rounded-lg px-3 flex items-center justify-center bg-gray-300'>
                                         No results found!
                                     </div>
+                                  </div>
                                     :
                                     <>
                                         {
-                                            bestSearch.length >= 10 &&
+                                            bestSearch.length >= 10 && bookData?.results.length != 0 &&
                                             <>
                                                 <div className='w-full  max-w-[1200px] mx-auto text-xl font-bold px-4 py-2'>
                                                     For You
@@ -240,7 +272,7 @@ const SearchedBook = () => {
                                                                         <img src={itm.formats['image/jpeg']} alt={`${itm.title} cover`} className='w-full h-full object-contain mb-2' />
                                                                     </div>
                                                                     <div className='h-[100%] flex flex-col justify-between'>
-                                                                        <div className='text-white font-bold w-[200px] h-auto flex items-start justify-start'>
+                                                                        <div className='font-bold w-[200px] h-auto flex items-start justify-start text-black'>
                                                                             {
                                                                                 itm.title.length > 30 ?
                                                                                     itm.title.slice(0, 60) + '...' :
@@ -248,7 +280,7 @@ const SearchedBook = () => {
                                                                             }
                                                                         </div>
                                                                         <div className='flex flex-col text-white'>
-                                                                            <div className='text-white flex gap-1 justify-between'>
+                                                                            <div className='text-black flex gap-1 justify-between'>
                                                                                 Downloads:
                                                                                 <span className='gap-1 flex items-center justify-center bg-gray-700 text-white py-[1px] px-2 rounded-full'>
                                                                                     <span className='pb-[1px] text-[12px] flex items-center justify-center'><FaDownload /></span>
