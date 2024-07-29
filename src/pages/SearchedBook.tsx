@@ -107,7 +107,9 @@ const SearchedBook = () => {
             const filterBooks = bookData.results.filter((itm) =>
                 itm.title.toLowerCase().includes(bookQuery?.toLowerCase() || "")
             );
-            setBestSearch(filterBooks.slice(0, 20))
+            if(filterBooks.length >= 10) {
+                setBestSearch(filterBooks.slice(0, 10))
+            }
         }
     }, [bookData, bookQuery]);
 
@@ -139,6 +141,7 @@ const SearchedBook = () => {
             window.scrollTo(0, 0)
         }
     }
+
 
     return (
 
@@ -192,6 +195,9 @@ const SearchedBook = () => {
                         </select>
                     </div>
                 </div>
+                <div className='py-2 w-full'>
+                    asdsa
+                </div>
                 {
                     pushedSearch ?
                         <div className='h-[100vh] w-full flex items-center justify-center'>
@@ -229,7 +235,7 @@ const SearchedBook = () => {
                                                             bestSearch.length != null && bestSearch.length >= 10 && bestSearch?.slice(0, 10).map((itm) => (
                                                                 <div
                                                                     onClick={() => { window.open(`/searched-book/${itm?.id}`, '_blank') }}
-                                                                    className="embla__slide flex gap-3 justify-around bg-red-400 " key={itm.id}>
+                                                                    className="embla__slide flex gap-3 justify-around bg-gray-300 text-black" key={itm.id}>
                                                                     <div className='rounded-xl overflow-hidden h-[100%] w-auto font-bold book'>
                                                                         <img src={itm.formats['image/jpeg']} alt={`${itm.title} cover`} className='w-full h-full object-contain mb-2' />
                                                                     </div>
