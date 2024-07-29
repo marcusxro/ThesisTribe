@@ -95,7 +95,7 @@ const ViewBook: React.FC = () => {
         setErrorOnLoad(true)
     }
 
-    
+
     const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
     const targetUrl = bookData?.results[0]?.formats['text/html'];
     const proxiedUrl = `${proxyUrl}${targetUrl}`;
@@ -125,7 +125,7 @@ const ViewBook: React.FC = () => {
                 }
 
                 {
-                  bookData != null &&  bookData?.results?.map((itm) => (
+                    bookData != null && bookData?.results?.map((itm) => (
                         <div
                             key={itm.id}
                             className='gap-8 w-full h-full flex flex-col max-w-[1200px] mx-auto md:flex-row bg-gray-300 p-5 rounded-lg text-black'>
@@ -255,7 +255,9 @@ const ViewBook: React.FC = () => {
                             className='py-1 px-2 bg-slate-500 rounded-lg text-white'>
                             Read Book
                         </button>
-                        <button className='py-1 px-2 bg-slate-500 rounded-lg text-white'>
+                        <button
+                            onClick={()=> {alert("coming soon")}}
+                            className='py-1 px-2 bg-slate-500 rounded-lg text-white'>
                             Save Book
                         </button>
                     </div>
