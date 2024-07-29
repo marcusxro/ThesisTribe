@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import Header from '../comp/Header'
-
+import { FaArrowCircleUp } from "react-icons/fa";
 import { FaDownload } from "react-icons/fa";
 
 interface AuthorArr {
@@ -56,6 +56,12 @@ const ViewBook: React.FC = () => {
     const params = useParams()
     const bookid = params?.bookID
     const [bookData, setBookData] = useState<OuterData | null>(null);
+    const [bookArr, setBookArr] = useState<OuterData | null>(null);
+    const [filteredBooks, setFilteredBooks] = useState<ResultType[] | null | undefined>([]);
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const bookQuery = queryParams.get('bookQuery');
+
 
 
     useEffect(() => {
@@ -69,17 +75,12 @@ const ViewBook: React.FC = () => {
 
         axios.get(`https://Ebook-Metadata-API.proxy-production.allthingsdev.co/books/?ids=${bookid}`, { headers })
             .then((response) => {
-                console.log(response.data)
                 setBookData(response.data)
             })
             .catch((error) => {
                 console.error(error)
             });
     }, [])
-    let embedLink;
-    useEffect(() => {
-        console.log(bookData?.results[0]?.formats['text/html'])
-    }, [bookData])
 
     const [seeAll, setSeeAll] = useState<boolean>(false)
     const [isRead, setIsRead] = useState<boolean>(false)
@@ -95,11 +96,54 @@ const ViewBook: React.FC = () => {
         setErrorOnLoad(true)
     }
 
+    const [pushedSearch, setPushedSearch] = useState<boolean>(false)
 
-    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-    const targetUrl = bookData?.results[0]?.formats['text/html'];
-    const proxiedUrl = `${proxyUrl}${targetUrl}`;
+    useEffect(() => {
+        if (!bookQuery) {
+            return
+        }
+        setPushedSearch(true)
 
+        const headers = {
+            "x-apihub-key": "K1rKPUJ4N7xguMsHd6qCqyM7k5gJNo6ytuw6vTmwFQmt44YaM6",
+            "x-apihub-host": "Ebook-Metadata-API.allthingsdev.co",
+            "x-apihub-endpoint": "b6b8c575-3f0d-43cd-8924-26b2cf72e37d"
+        };
+
+
+        axios.get(`https://Ebook-Metadata-API.proxy-production.allthingsdev.co/books/?search=${bookQuery}&page=1`, { headers })
+            .then((response) => {
+                setBookArr(response.data)
+
+                const filteredData = bookArr?.results.filter((itm) => {
+                    if (bookData != null) {
+                        return !bookData.results.some((existingItem) => existingItem.title === itm.title);
+                    }
+                    return true;
+                });
+
+                setFilteredBooks(filteredData && filteredData);
+
+                console.log(filteredData)
+                console.log(response.data)
+
+                setPushedSearch(false)
+            })
+            .catch((error) => {
+                console.error(error)
+            });
+    }, [bookQuery])
+
+
+
+    function visitByID(stringSearch: string | number) {
+        if (bookQuery) {
+            // Encode the bookQuery to make it URL-safe
+            const encodedBookQuery = encodeURIComponent(bookQuery);
+            window.open(`/searched-book/${stringSearch}?bookQuery=${encodedBookQuery}`, '_blank');
+        }
+    }
+    
 
     return (
         <div className='relative'>
@@ -135,7 +179,7 @@ const ViewBook: React.FC = () => {
                                     src={itm.formats['image/jpeg']} alt="" />
                             </div>
                             <div className='flex flex-col w-full items-start'>
-                                <div className='text-3xl font-bold'>
+                                <div className='text-xl font-bold'>
                                     {itm.title}
                                 </div>
 
@@ -256,7 +300,7 @@ const ViewBook: React.FC = () => {
                             Read Book
                         </button>
                         <button
-                            onClick={()=> {alert("coming soon")}}
+                            onClick={() => { alert("coming soon") }}
                             className='py-1 px-2 bg-slate-500 rounded-lg text-white'>
                             Save Book
                         </button>
@@ -299,6 +343,112 @@ const ViewBook: React.FC = () => {
                         type="" />
                 </div>
             }
+
+            <div>
+                <div className='flex flex-col h-full w-full classer'>
+                    {
+                       bookData != null && pushedSearch && bookData?.results && bookData?.results.length > 0 ?
+                            <div className='w-full h-[50vh] flex items-center justify-center max-w-[1200px] mx-auto  flex-col gap 1'>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 44 44" stroke="#000">
+                                    <g fill="none" fill-rule="evenodd" stroke-width="2">
+                                        <circle cx="22" cy="22" r="1">
+                                            <animate attributeName="r" begin="0s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite" />
+                                            <animate attributeName="stroke-opacity" begin="0s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite" />
+                                        </circle>
+                                        <circle cx="22" cy="22" r="1">
+                                            <animate attributeName="r" begin="-0.9s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite" />
+                                            <animate attributeName="stroke-opacity" begin="-0.9s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite" />
+                                        </circle>
+                                    </g>
+                                </svg>
+                                <div className='text-gray-500 text-[13px]'>
+                                    Searching for relevant books
+                                </div>
+                            </div>
+                            :
+                            <>
+                                {
+                                    filteredBooks?.length === 0 && !pushedSearch ?
+                                        <div className='w-full h-full p-4'>
+                                            <div className='font-bold m-3 text-[#292929] w-full h-[50vh]  max-w-[1200px] mx-auto mt-3  rounded-lg px-3 flex items-center justify-center bg-gray-300'>
+                                                No results found!
+                                            </div>
+                                        </div>
+                                        :
+                                        <>
+
+                                            <div className='w-full  max-w-[1200px] mx-auto text-xl font-bold px-4 py-2'>
+                                                You might wanna like
+                                            </div>
+                                            <div className='w-full h-full
+                                                max-w-[1200px]
+                                              text-black p-2 grid grid-cols-2 
+                                                mx-auto
+                                                sm:grid-cols-2  
+                                                md:grid-cols-3
+                                                lg:grid-cols-4 
+                                                xl:grid-cols-4 gap-5'>
+                                                    {}
+
+                                                {
+                                                 bookArr?.results
+                                                 ?.filter((itmz) => (bookData != null && !bookData.results.some(existing => existing.title === itmz.title)))
+                                                 .map((book) => (
+                                                        <div
+                                                            onClick={() => { visitByID(book?.id) }}
+                                                            className='flex flex-col h-full m-h-[500px] items-center justify-center' key={book.id}>
+                                                            <div
+                                                                className='w-[90%] h-full  rounded-lg overflow-hidden flex items-center justify-center book cursor-pointer'>
+                                                                {book.formats['image/jpeg'] && <img src={book.formats['image/jpeg']} alt={`${book.title} cover`} className='w-full h-full object-contain mb-2' />}
+                                                            </div>
+                                                            <h2 className='text-sm mt-2 font-bold text-center w-full md:text-md'>
+                                                                {
+                                                                    book.title.length > 30 ?
+                                                                        book.title.slice(0, 30) + '...' :
+                                                                        book.title
+                                                                }
+                                                            </h2>
+                                                        </div>
+                                                    ))
+                                                }
+                                            </div>
+
+                                            <div className='flex gap-2 w-full  max-w-[1200px]  mx-auto py-4 px-5'>
+                                                <div
+                                                    onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                                    className='h-[30px] text-gray-700 text-3xl flex items-center justify-center hover:text-gray-950 cursor-pointer'>
+                                                    <FaArrowCircleUp />
+                                                </div>
+
+                                                {/* {
+                                                    prev &&
+                                                    <div
+                                                        className='flex gap-2'>
+                                                        <div
+                                                            onClick={() => { prevFunc() }}
+
+                                                            className='bg-gray-700 text-[15px] px-3 py-1 rounded-md text-white cursor-pointer mb-5  hover:bg-gray-950'>
+                                                            ({bookPage && parseFloat(bookPage) - 1}) prev page
+                                                        </div>
+                                                    </div>
+                                                }
+                                                {
+                                                    nextBtn &&
+                                                    <div
+                                                        onClick={() => { nextFunc() }}
+                                                        className='bg-gray-700 text-[15px] px-3 py-1 rounded-md text-white cursor-pointer mb-5 hover:bg-gray-950'>
+                                                        next page     ({bookPage && parseFloat(bookPage) + 1})
+                                                    </div>
+                                                } */}
+                                            </div>
+                                        </>
+                                }
+                            </>
+                    }
+
+
+                </div>
+            </div>
         </div>
     )
 }
