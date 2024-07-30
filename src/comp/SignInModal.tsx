@@ -71,9 +71,6 @@ const SignInModal: React.FC<boolType> = ({ isDataSave }) => {
                     return errorModal('Please verify your account first')
                 } else {
                     notif('User Signed in!')
-                    if(user) {
-                        nav(-1)
-                       }
                        
                     setTimeout(() => {
                         if (!isDataSave) {
