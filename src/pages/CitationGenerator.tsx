@@ -1,40 +1,89 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { firestoreKey } from '../firebase/FirebaseKey'
+import {
+    collection,
+    addDoc,
+    getDocs,
+    updateDoc,
+    deleteDoc,
+    doc,
+    DocumentData
+} from 'firebase/firestore';
 
-const CitationGenerator:React.FC = () => {
+interface DataType {
+    id: string;
+    name: string;
+    age: number;
+}
 
-    async function getCitationFromURL(url: string): Promise<string | null> {
-        const apiUrl = `https://api.zotero.org/groups/YOUR_GROUP_ID/items?url=${encodeURIComponent(url)}&format=json`;
-        
-        try {
-            const response = await fetch(apiUrl, {
-                headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
-            });
-            const data = await response.json();
-            
-            if (data && data.length > 0) {
-                const item = data[0];
-                return item.citation || null; // Assuming citation is available directly
-            } else {
-                return null;
-            }
-        } catch (error) {
-            console.error('Error fetching citation:', error);
-            return null;
-        }
-    }
-    
-    // Example usage
-    (async () => {
-        const url = 'https://www.freecodecamp.org/news/the-biggest-changes-in-javascript-this-year/';
-        const citation = await getCitationFromURL(url);
-        console.log('Citation:', citation);
-    })();
+const CitationGenerator: React.FC = () => {
 
-  return (
-    <div>
-        sds
-    </div>
-  )
+    const [data, setData] = useState<DataType[]>([]);
+    const [name, setName] = useState('');
+    const [age, setAge] = useState<number | string>('');
+
+    const fetchData = async () => {
+        const querySnapshot = await getDocs(collection(firestoreKey, 'save'));
+        const dataList: DataType[] = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data()
+        })) as DataType[];
+        setData(dataList);
+    };
+
+    const handleAdd = async () => {
+        await addDoc(collection(firestoreKey, 'save'), { name, age: Number(age) });
+        fetchData();
+    };
+
+    const handleUpdate = async (id: string) => {
+        const userDoc = doc(firestoreKey, 'save', id);
+        await updateDoc(userDoc, { name, age: Number(age) });
+        fetchData();
+    };
+
+    const handleDelete = async (id: string) => {
+        const userDoc = doc(firestoreKey, 'save', id);
+        await deleteDoc(userDoc);
+        fetchData();
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+
+
+
+    return (
+        <div>
+            <h1>CRUD with Firebase Firestore</h1>
+            <div>
+                <input
+                    type="text"
+                    placeholder="Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                />
+                <input
+                    type="number"
+                    placeholder="Age"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                />
+                <button onClick={handleAdd}>Add</button>
+            </div>
+            <ul>
+                {data.map((item) => (
+                    <li key={item.id}>
+                        {item.name} - {item.age}
+                        <button onClick={() => handleUpdate(item.id)}>Update</button>
+                        <button onClick={() => handleDelete(item.id)}>Delete</button>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    )
 }
 
 export default CitationGenerator

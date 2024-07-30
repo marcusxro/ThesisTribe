@@ -9,6 +9,9 @@ import BookFinder from './pages/BookFinder';
 import SearchedBook from './pages/SearchedBook';
 import ViewBook from './pages/ViewBook';
 import CitationGenerator from './pages/CitationGenerator';
+import SignIn from './pages/SignIn';
+import CreateAccount from './pages/CreateAccount';
+import SaveDatas from './pages/SaveDatas';
 
 const App:React.FC= () => {
 
@@ -18,8 +21,12 @@ const App:React.FC= () => {
       <div className="App">
         <Routes>
           <Route path='/' element={<Homepage />} />
+          <Route path='/sign-in' element={<SignIn />} />
+          <Route path='/sign-up' element={<CreateAccount />} />
           <Route path='/search/:query/:page' element={<SearchedItem />} />
+
           <Route path='/book-finder/' element={<BookFinder />} />
+          <Route path='/saved-datas' element={<SaveDatas />} />
 
           <Route path='/search-book/:bookQuery/:page' element={<SearchedBook />} />
           <Route path='/searched-book/:bookID' element={<ViewBook />} />

@@ -7,10 +7,19 @@ import { FaInfoCircle } from "react-icons/fa";
 import { IoMdContact } from "react-icons/io";
 import { CiSearch } from "react-icons/ci";
 import { useNavigate, useParams } from 'react-router-dom';
+import { IoIosLogOut } from "react-icons/io";
+import { authKey } from '../firebase/FirebaseKey';
+import { signOut } from 'firebase/auth';
+import { CiLogin } from "react-icons/ci";
+
+import isUser from './IsUser'
+
 interface typeOfProps {
     inputSee: boolean,
     bookSee: boolean
 }
+
+
 
 const Header: React.FC<typeOfProps> = ({ inputSee, bookSee }) => {
 
@@ -43,6 +52,25 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee }) => {
 
 
     const inputSearchValue = !inputVal && !isChanged ? params?.query : inputVal
+
+    function SignOutAccout() {
+        signOut(authKey)
+            .then(() => {
+
+            }).catch((err) => {
+                console.log(err)
+            })
+    }
+
+    const [user, setUser] = isUser();
+
+
+    useEffect(() => {
+        console.log(user)
+    }, [user])
+
+
+
 
     return (
         <header className={`custom-pos py-5 ${inputSee && 'border-b-2 border-b-[#e6e6e6]'} ${bookSee && 'border-b-2 border-b-[#e6e6e6]'}`}>
@@ -126,6 +154,28 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee }) => {
                         className='bg-[#292929] text-white
                      py-1 px-5 rounded-3xl cursor-pointer  hover:bg-gray-700 
                      flex gap-1 items-center text-center'><IoMdContact />Books</div>
+                    {
+                        user === null ?
+                            <div
+                                onClick={() => { nav('/sign-in')}}
+                                className='bg-[#292929] text-white
+                                py-1 px-5 rounded-3xl cursor-pointer  hover:bg-gray-700 
+                                flex gap-1 items-center text-center'><CiLogin />Sign In</div>
+                            :
+                          <div className='flex gap-2 flex-col'>
+                              <div
+                                onClick={() => { nav('/saved-datas') }}
+                                className='bg-[#292929] text-white
+                                py-1 px-5 rounded-3xl cursor-pointer  hover:bg-gray-700 
+                                flex gap-1 items-center text-center'><IoIosLogOut />Saves</div>
+                                  <div
+                                onClick={() => { SignOutAccout() }}
+                                className='bg-[#292929] text-white
+                                py-1 px-5 rounded-3xl cursor-pointer  hover:bg-gray-700 
+                                flex gap-1 items-center text-center'><IoIosLogOut />Log Out</div>
+                          </div>
+                    }
+
                 </div>
             }
         </header>
