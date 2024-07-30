@@ -182,7 +182,8 @@ const SaveDatas: React.FC = () => {
                                     {filteredItem.MyCollection.slice().reverse().map((z) => (
                                         <div className='cursor-pointer flex items-start flex-col bg-[#3d3d3d] text-white p-3 rounded-lg'>
                                             <div className='font-semibold'>{z.Title}</div>
-                                            <div className='text-blue-300 break-words'>{z.Link}</div>
+                                            <div className='text-blue-300 break-words whitespace-normal break-all'>
+                                                {z.Link}</div>
                                             <div className='text-gray-400'>Publisher: {z.Publisher}, {z.Year}</div>
                                             <div className='text-gray-400'>Updated: {z.Updated}</div>
 
