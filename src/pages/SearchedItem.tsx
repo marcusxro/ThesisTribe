@@ -4,7 +4,21 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Header from '../comp/Header';
 import { FaArrowCircleUp } from "react-icons/fa";
 import CiteComp from '../comp/CiteComp';
+import { onAuthStateChanged, SignInMethod } from 'firebase/auth';
+import { authKey, firestoreKey } from '../firebase/FirebaseKey';
+import IsUser from '../comp/IsUser';
+import SignInModal from '../comp/SignInModal';
+import SaveModal from '../comp/SaveModal';
 
+import {
+    collection,
+    addDoc,
+    getDocs,
+    updateDoc,
+    deleteDoc,
+    doc,
+    DocumentData
+} from 'firebase/firestore';
 
 interface Author {
     name: string;
@@ -21,6 +35,7 @@ interface ResponseObject {
     doi_url: string;
     first_oa_location: any;
     genre: string;
+    Link: string;
     has_repository_copy: boolean;
     is_oa: boolean;
     is_paratext: boolean;
@@ -45,7 +60,37 @@ interface DataObject {
     snippet: string;
 }
 
+
+
+interface DataType {
+    id: string;
+    Uid: string;
+    name: string;
+    MyCollection: ResponseObject[];
+}
+
+
 const SearchedItem: React.FC = () => {
+    const [data, setData] = useState<DataType[]>([]);
+
+    const [user, setUser] = IsUser()
+
+    const fetchData = async () => {
+        const querySnapshot = await getDocs(collection(firestoreKey, 'userCollectionOfSave'));
+        const dataList: DataType[] = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data()
+        })) as DataType[];
+        setData(dataList);
+    };
+
+
+    useEffect(() => {
+        if (user) {
+            fetchData();  // Fetch data when user changes
+        }
+    }, [user, data]);
+
     const [isChangePage, setISChangePage] = useState<boolean>(false)
     const params = useParams()
     const location = useLocation()
@@ -270,10 +315,95 @@ const SearchedItem: React.FC = () => {
         setCiteDetails(details);
         setOpenCiteModal(prmsBool);
     };
-    
+
+
+    const [openLogInModal, setOpenLogInModal] = useState<boolean>(false)
+
+    const [objToSave, setObjToSave] = useState<ResponseObject | null>(null);
+
+    function closeSaveModal() {
+        setOpenLogInModal(false)
+        setObjToSave(null)
+    }
+
+    function isSaveData(paramItm: ResponseObject | null) {
+        if (user) {
+            if (user.emailVerified) {
+
+                if (paramItm != null) {
+                    setObjToSave(paramItm)
+                } else {
+                    setOpenLogInModal(true)
+
+                }
+            } else {
+                alert('not verified')
+            }
+        } else {
+            setOpenLogInModal(true)
+
+                if (paramItm != null) {
+                    setObjToSave(paramItm)
+                }
+            
+        }
+    }
+
+    useEffect(() => {
+        if (user != null) {
+            setOpenLogInModal(false)
+        }
+    }, [openLogInModal, user])
+
+
+    const isItemSaved = (response: any) => {
+        return data.some((userItem: any) => {
+            if (userItem.Uid === user?.uid) {
+                return userItem.MyCollection.some((collectionItem: any) => {
+                    if (collectionItem.Link === response.doi_url) {
+                        return true;
+                    }
+                    return false;
+                });
+            }
+            return false;
+        });
+    };
+
+
 
     return (
         <div className='h-auto'>
+            {
+                objToSave != null && user?.emailVerified &&
+                <div
+                    onClick={() => {
+                        closeSaveModal()
+                    }}
+                    className='custom-pos h-[100dvh] z-[200000000] items-center flex justify-center'>
+                    <div
+                        onClick={(e) => {
+                            e.stopPropagation()
+                        }}
+                        className='max-w-[400px] w-full'>
+                        <SaveModal objectItem={objToSave} closer={setObjToSave} />
+                    </div>
+                </div>
+            }
+            {
+                openLogInModal && !user && 
+                <div
+                    onClick={() => {
+                        setOpenLogInModal(false)
+                    }}
+                    className='custom-pos h-[100dvh] z-[200000000] items-center flex justify-center'>
+                    <div
+                        className='max-w-[400px] w-full'
+                        onClick={(e) => { e.stopPropagation() }}>
+                        <SignInModal isDataSave={true} />
+                    </div>
+                </div>
+            }
             <Header inputSee={true} bookSee={false} />
             {
                 openCiteModal && citeDetails &&
@@ -431,11 +561,28 @@ const SearchedItem: React.FC = () => {
                                     onClick={(e) => { e.stopPropagation() }}
                                     className='flex gap-1 text-[13px] mt-2'>
                                     <div
-                                onClick={() => { openModalWithDetails(true, itm.response) }}
+                                        onClick={() => { openModalWithDetails(true, itm.response) }}
                                         className='bg-gray-700 text-[13px] px-1 rounded-md text-white cursor-pointer'>
                                         Cite</div>
-                                    <div className='bg-gray-700 text-[13px] px-1 rounded-md text-white cursor-pointer'>
-                                        Save</div>
+                                    {
+                                        user && data.some(userItem => {
+                                            const isSaved = isItemSaved(itm.response);
+                                            return isSaved;
+                                        }) ? (
+                                            <div
+                                                onClick={() => isSaveData(itm.response)}
+                                                className='bg-green-700 text-[13px] px-1 rounded-md text-white cursor-pointer'>
+                                                Saved
+                                            </div>
+                                        ) : (
+                                            <div
+                                                onClick={() => isSaveData(itm.response)}
+                                                className='bg-gray-700 text-[13px] px-1 rounded-md text-white cursor-pointer'>
+                                                Save
+                                            </div>
+                                        )
+                                    }
+
                                 </div>
                             </div>
                         ))

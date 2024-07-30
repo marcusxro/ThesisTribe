@@ -136,6 +136,7 @@ const ViewBook: React.FC = () => {
 
 
 
+
     function visitByID(stringSearch: string | number) {
         if (bookQuery) {
             // Encode the bookQuery to make it URL-safe
@@ -419,27 +420,6 @@ const ViewBook: React.FC = () => {
                                                     className='h-[30px] text-gray-700 text-3xl flex items-center justify-center hover:text-gray-950 cursor-pointer'>
                                                     <FaArrowCircleUp />
                                                 </div>
-
-                                                {/* {
-                                                    prev &&
-                                                    <div
-                                                        className='flex gap-2'>
-                                                        <div
-                                                            onClick={() => { prevFunc() }}
-
-                                                            className='bg-gray-700 text-[15px] px-3 py-1 rounded-md text-white cursor-pointer mb-5  hover:bg-gray-950'>
-                                                            ({bookPage && parseFloat(bookPage) - 1}) prev page
-                                                        </div>
-                                                    </div>
-                                                }
-                                                {
-                                                    nextBtn &&
-                                                    <div
-                                                        onClick={() => { nextFunc() }}
-                                                        className='bg-gray-700 text-[15px] px-3 py-1 rounded-md text-white cursor-pointer mb-5 hover:bg-gray-950'>
-                                                        next page     ({bookPage && parseFloat(bookPage) + 1})
-                                                    </div>
-                                                } */}
                                             </div>
                                         </>
                                 }
