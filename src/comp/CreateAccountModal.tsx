@@ -67,10 +67,15 @@ const CreateAccountModal: React.FC = () => {
                 }
             }
         } catch (err: any) {
+            if(err === 'Email already in use') {
+                errorModal('Email already in use')
+            }
             if (err.code === 'auth/email-already-in-use') {
-                console.error('Email already in use');
+                errorModal('Email already in use')
+                clearInputs()
             } else {
                 console.error('Error:', err);
+                errorModal("There's some error, try again later")
             }
         }
     };
