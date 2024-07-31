@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Header from '../comp/Header'
 import { useNavigate } from 'react-router-dom'
 import { MdArrowOutward } from "react-icons/md";
@@ -9,18 +9,38 @@ import { MdLibraryBooks } from "react-icons/md";
 import { FaGithub } from "react-icons/fa";
 import { FaFacebook } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa";
+import wierdBubble from '../vids/Weird Bubble - Copy@1-1920x957.jpg'
 
 const Home = () => {
     const nav = useNavigate()
     const scrollToRef = useRef<HTMLDivElement | null>(null);
     const infoRef = useRef<HTMLDivElement | null>(null);
-
+    const [boolRender, setBoolRender] = useState(false)
 
     const scrollToElement = () => {
         if (scrollToRef.current) {
             scrollToRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     };
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth <= 700) {
+                setBoolRender(true)
+
+            } else {
+                setBoolRender(false)
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [boolRender]);
+
+
+    
+
+    
 
     return (
         <div className=''>
@@ -30,15 +50,25 @@ const Home = () => {
             <div className='h-auto w-full px-4 mx-auto relative'>
 
                 <div className='h-[80dvh] flex flex-col items-center justify-center md:h-[100vh]'>
-                    <div className='absolute w-full h-full goLow'>
-                        <Spline scene="https://prod.spline.design/CJ7b0OdSMJGeC6AB/scene.splinecode" />
-                    </div>
+
+                    {
+                        boolRender === true ?
+                            <div className='absolute w-full h-full goLow'>
+                                <img className='w-full h-full object-cover' src={wierdBubble} alt="" />
+                            </div>
+                            :
+                            <div className='absolute w-full h-full goLow'>
+                                <Spline scene="https://prod.spline.design/CJ7b0OdSMJGeC6AB/scene.splinecode" />
+                            </div>
+                    }
                     <div className='xText flex flex-col relative z-20'>
                         <div className='txt flex'>
                             <div>FIND KNOWLEDGE.</div>
                         </div>
                         <div className='txt flex h-full items-center justify-center gap-3'>
-                            <div className='imgT'></div>
+                            <div className='imgT text-sm items-center flex justify-center'>
+    
+                            </div>
                             <div>
                                 READ MORE.
                             </div>
@@ -68,9 +98,9 @@ const Home = () => {
             </div>
             <div className='h-auto p-4'>
                 <div className='w-full max-w-[1200px] mx-auto pt-[50px] h-full'>
-                    <div 
-                    ref={infoRef}
-                    className='text-center font-bold text-3xl text-gray-800'>WHAT WE CAN DO TOGETHER</div>
+                    <div
+                        ref={infoRef}
+                        className='text-center font-bold text-3xl text-gray-800'>WHAT WE CAN DO TOGETHER</div>
                     <div className='text-center font-bold text-sm text-gray-400'>Here's the list of our capabilities</div>
 
                     <div className='w-full  h-full mt-5 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 gap-5'>
@@ -149,7 +179,7 @@ const Home = () => {
                 </div>
             </div>
 
-            <div className='h-auto p-4 mb-[50px]'>
+            <div className='h-auto p-4 mb-[20px]'>
                 <div className='w-full max-w-[1200px] mx-auto pt-[50px] h-full flex border-t-[1px] border-t-[#888] items-center justify-between'>
                     <div>©2024-ThesisTribe</div>
                     <div className='flex gap-3'>
