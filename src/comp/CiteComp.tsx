@@ -30,12 +30,19 @@ interface ResponseObject {
     publisher: string;
     title: string;
     updated: string;
-    year: number;
+    year?: number;
     z_authors: Author[];
+    Link?: string;
+    Publisher?: string;
+    Title?: string;
+    Updated?: string;
+    Genre?: string;
+    Authors?: Author[] ;
+    Year?: number;
 }
 
 interface propsType {
-    closer: React.Dispatch<React.SetStateAction<boolean>>;
+    closer: React.Dispatch<React.SetStateAction<boolean>>
     citeDetails: ResponseObject;
 }
 
@@ -49,9 +56,15 @@ const CiteComp: React.FC<propsType> = ({ closer, citeDetails }) => {
         year,
         journal_name,
         z_authors,
-        genre
+        genre,
+        Year,
+        Title,
+        Link,
+        Publisher,
+        Authors
     } = citeDetails;
 
+    console.log(citeDetails)
     // Format authors
     function formatAuthors(authors: Author[] | null): string {
         if (!authors || authors.length === 0) {
@@ -63,21 +76,56 @@ const CiteComp: React.FC<propsType> = ({ closer, citeDetails }) => {
             return `${given ? given + ' ' : ''}${family}`;
         }).join(", ");
     }
-    
-    // APA Citation
     const apaCitation = () => {
-        return `${year}. <i>${title}</i>. By ${formatAuthors(z_authors)}. ${publisher}. <a href="${doi_url}">${doi_url}</a>`;
+        const citationYear = year ?? Year ?? '';
+        const citationTitle = title ?? Title ?? '';
+        const citationPublisher = publisher ?? Publisher ?? '';
+        const citationDoiUrl = doi_url ?? Link ?? '';
+        const formattedAuthors = formatAuthors(z_authors ?? Authors);
+    
+        // Construct the citation string
+        const yearPart = citationYear ? `${citationYear}. ` : '';
+        const titlePart = citationTitle ? `<i>${citationTitle}</i>. ` : '';
+        const publisherPart = citationPublisher ? `${citationPublisher}. ` : '';
+        const doiPart = citationDoiUrl ? `<a href="${citationDoiUrl}">${citationDoiUrl}</a>` : '';
+    
+        return `${formattedAuthors ? `${formattedAuthors}. ` : ''}${titlePart}${yearPart}${publisherPart}${doiPart}`;
     };
-
-    // MLA Citation
+    
     const mlaCitation = () => {
-        return `<i>${title}</i>. By ${formatAuthors(z_authors)}. ([Hamden, Conn.:] Archon Books. ${year}. Pp. xx, 411. $12.00.)." ${journal_name}, vol. 1, no. 1, ${year}, pp. 1-10. ${publisher}. <a href="${doi_url}">${doi_url}</a>.`;
+        const citationYear = year ?? Year ?? '';
+        const citationTitle = title ?? Title ?? '';
+        const citationPublisher = publisher ?? Publisher ?? '';
+        const citationDoiUrl = doi_url ?? Link ?? '';
+        const formattedAuthors = formatAuthors(z_authors ?? Authors);
+    
+        // Construct the citation string
+        const yearPart = citationYear ? ` (${citationYear}). ` : '';
+        const titlePart = citationTitle ? `<i>${citationTitle}</i>. ` : '';
+        const publisherPart = citationPublisher ? `${citationPublisher}. ` : '';
+        const doiPart = citationDoiUrl ? `<a href="${citationDoiUrl}">${citationDoiUrl}</a>` : '';
+    
+        return `${formattedAuthors ? `${formattedAuthors}. ` : ''}${titlePart}${yearPart}${publisherPart}${doiPart}`;
     };
-
+    
+    
     // Chicago Citation
     const chicagoCitation = () => {
-        return `<i>${title}</i>. By ${formatAuthors(z_authors)}. ([Hamden, Conn.:] Archon Books. ${year}. Pp. xx, 411. $12.00.)." ${journal_name} (${year}): 1-10. ${publisher}. <a href="${doi_url}">${doi_url}</a>`;
+        const citationYear = year ?? Year ?? '';
+        const citationTitle = title ?? Title ?? '';
+        const citationPublisher = publisher ?? Publisher ?? '';
+        const citationDoiUrl = doi_url ?? Link ?? '';
+        const formattedAuthors = formatAuthors(z_authors ?? Authors);
+    
+        // Construct the citation string
+        const yearPart = citationYear ? `(${citationYear}). ` : '';
+        const titlePart = citationTitle ? `<i>${citationTitle}</i>. ` : '';
+        const publisherPart = citationPublisher ? `${citationPublisher}. ` : '';
+        const doiPart = citationDoiUrl ? `<a href="${citationDoiUrl}">${citationDoiUrl}</a>` : '';
+    
+        return `${formattedAuthors ? `${formattedAuthors}. ` : ''}${titlePart}${yearPart}${publisherPart}${doiPart}`;
     };
+    
 
     return (
         <div

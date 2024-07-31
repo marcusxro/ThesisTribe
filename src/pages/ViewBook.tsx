@@ -5,6 +5,23 @@ import { useLocation, useParams } from 'react-router-dom'
 import Header from '../comp/Header'
 import { FaArrowCircleUp } from "react-icons/fa";
 import { FaDownload } from "react-icons/fa";
+import { onAuthStateChanged, SignInMethod } from 'firebase/auth';
+import { authKey, firestoreKey } from '../firebase/FirebaseKey';
+import IsUser from '../comp/IsUser';
+import SignInModal from '../comp/SignInModal';
+import SaveModal from '../comp/SaveModal';
+
+import {
+    collection,
+    addDoc,
+    getDocs,
+    updateDoc,
+    deleteDoc,
+    doc,
+    DocumentData
+} from 'firebase/firestore';
+
+import SaveBookModal from '../comp/SaveBookModal';
 
 interface AuthorArr {
     name: string;
@@ -52,7 +69,18 @@ interface OuterData {
     results: ResultType[];
 }
 
+interface DataType {
+    id: string;
+    Uid: string;
+    name: string;
+    MyCollection: any;
+    MyBook: ResultType[]
+}
+
+
 const ViewBook: React.FC = () => {
+    const [user] = IsUser()
+    const [isSaveBook, setIsSaveBook] = useState<boolean | null>(false)
     const params = useParams()
     const bookid = params?.bookID
     const [bookData, setBookData] = useState<OuterData | null>(null);
@@ -61,6 +89,36 @@ const ViewBook: React.FC = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const bookQuery = queryParams.get('bookQuery');
+
+    const [data, setData] = useState<DataType[]>([]);
+    const [filteredArr, setFilteredArr] = useState<DataType[]>([]);
+    const [isSaved, setIsSaved] = useState<boolean>(false);
+
+
+
+
+
+    useEffect(() => {
+        if (user) {
+            console.log("there is user")
+            const fetchData = async () => {
+                try {
+                    const querySnapshot = await getDocs(collection(firestoreKey, 'userCollectionOfSave'));
+                    const dataList: DataType[] = querySnapshot.docs.map((doc) => ({
+                        id: doc.id,
+                        ...doc.data()
+                    })) as DataType[];
+                    setData(dataList);
+                    setFilteredArr(dataList.filter((itm) => itm.Uid === user?.uid));
+
+                } catch (error) {
+                    console.error("Error fetching data: ", error);
+                }
+            };
+
+            fetchData();
+        }
+    }, [user, isSaveBook]);
 
 
 
@@ -144,12 +202,58 @@ const ViewBook: React.FC = () => {
             window.open(`/searched-book/${stringSearch}?bookQuery=${encodedBookQuery}`, '_blank');
         }
     }
-    
+
+
+
+    const isItemSaved = (response: any) => {
+        return data?.some((userItem: any) => {
+            if (userItem.Uid === user?.uid) {
+                if (userItem?.MyBook) {
+                    return userItem?.MyBook.some((collectionItem: any) => {
+                        if (collectionItem.id === response.id) {
+                            return true;
+                        }
+                        return false;
+                    });
+                }
+            }
+            return false;
+        });
+    };
+
+
+
 
     return (
         <div className='relative'>
             <Header inputSee={false} bookSee={true} />
 
+            {user?.emailVerified && isSaveBook &&
+                <div
+                    onClick={() => { setIsSaveBook(false) }}
+                    className='custom-pos h-[100dvh] z-[200000000] items-center flex justify-center'>
+
+                    <div
+                        className='w-full max-w-[400px] overflow-hidden rounded-lg'
+                        onClick={(e) => { e.stopPropagation() }}>
+                        <SaveBookModal objectItem={bookData?.results[0] as ResultType} closer={setIsSaveBook} />
+                    </div>
+                </div>
+            }
+            {
+                isSaveBook && !user &&
+                <div
+                    onClick={() => {
+                        setIsSaveBook(false)
+                    }}
+                    className='custom-pos h-[100dvh] z-[200000000] items-center flex justify-center'>
+                    <div
+                        className='max-w-[400px] w-full'
+                        onClick={(e) => { e.stopPropagation() }}>
+                        <SignInModal isDataSave={true} />
+                    </div>
+                </div>
+            }
             <div className='mt-[100px] w-full h-full px-5'>
                 {
                     bookData === null &&
@@ -300,11 +404,24 @@ const ViewBook: React.FC = () => {
                             className='py-1 px-2 bg-slate-500 rounded-lg text-white'>
                             Read Book
                         </button>
-                        <button
-                            onClick={() => { alert("coming soon") }}
-                            className='py-1 px-2 bg-slate-500 rounded-lg text-white'>
-                            Save Book
-                        </button>
+                        {
+                            user && bookData?.results.some(userItem => {
+                                const isSaved = isItemSaved(userItem);
+                                return isSaved;
+                            }) ? (
+                                <button
+                                onClick={() => { setIsSaveBook(true) }}
+                                className='py-1 px-2 bg-green-500 rounded-lg text-white'>
+                                Saved
+                            </button>
+                            ) : (
+                                <button
+                                onClick={() => { setIsSaveBook(true) }}
+                                className='py-1 px-2 bg-slate-500 rounded-lg text-white'>
+                                Save Book
+                            </button>
+                            )
+                        }
                     </div>
                 </div>
             }
@@ -348,7 +465,7 @@ const ViewBook: React.FC = () => {
             <div>
                 <div className='flex flex-col h-full w-full classer'>
                     {
-                   filteredBooks && filteredBooks?.length === 0 &&  bookData != null && pushedSearch && bookData?.results && bookData?.results.length > 0 ?
+                        filteredBooks && filteredBooks?.length === 0 && bookData != null && pushedSearch && bookData?.results && bookData?.results.length > 0 ?
                             <div className='w-full h-[50vh] flex items-center justify-center max-w-[1200px] mx-auto  flex-col gap 1'>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 44 44" stroke="#000">
                                     <g fill="none" fill-rule="evenodd" stroke-width="2">
@@ -372,7 +489,7 @@ const ViewBook: React.FC = () => {
                                     filteredBooks?.length === 0 && !pushedSearch ?
                                         <div className='w-full h-full p-4'>
                                             <div className='font-bold m-3 text-[#292929] w-full h-[50vh]  max-w-[1200px] mx-auto mt-3  rounded-lg px-3 flex items-center justify-center bg-gray-300'>
-                                               No relevant results found
+                                                No relevant results found
                                             </div>
                                         </div>
                                         :
@@ -389,28 +506,28 @@ const ViewBook: React.FC = () => {
                                                 md:grid-cols-3
                                                 lg:grid-cols-4 
                                                 xl:grid-cols-4 gap-5'>
-                                                    {}
+                                                { }
 
                                                 {
-                                                 bookArr?.results
-                                                 ?.filter((itmz) => (bookData != null && !bookData.results.some(existing => existing.title === itmz.title)))
-                                                 .map((book) => (
-                                                        <div
-                                                            onClick={() => { visitByID(book?.id) }}
-                                                            className='flex flex-col h-full m-h-[500px] items-center justify-center' key={book.id}>
+                                                    bookArr?.results
+                                                        ?.filter((itmz) => (bookData != null && !bookData.results.some(existing => existing.title === itmz.title)))
+                                                        .map((book) => (
                                                             <div
-                                                                className='w-[90%] h-full  rounded-lg overflow-hidden flex items-center justify-center book cursor-pointer'>
-                                                                {book.formats['image/jpeg'] && <img src={book.formats['image/jpeg']} alt={`${book.title} cover`} className='w-full h-full object-contain mb-2' />}
+                                                                onClick={() => { visitByID(book?.id) }}
+                                                                className='flex flex-col h-full m-h-[500px] items-center justify-center' key={book.id}>
+                                                                <div
+                                                                    className='w-[90%] h-full  rounded-lg overflow-hidden flex items-center justify-center book cursor-pointer'>
+                                                                    {book.formats['image/jpeg'] && <img src={book.formats['image/jpeg']} alt={`${book.title} cover`} className='w-full h-full object-contain mb-2' />}
+                                                                </div>
+                                                                <h2 className='text-sm mt-2 font-bold text-center w-full md:text-md'>
+                                                                    {
+                                                                        book.title.length > 30 ?
+                                                                            book.title.slice(0, 30) + '...' :
+                                                                            book.title
+                                                                    }
+                                                                </h2>
                                                             </div>
-                                                            <h2 className='text-sm mt-2 font-bold text-center w-full md:text-md'>
-                                                                {
-                                                                    book.title.length > 30 ?
-                                                                        book.title.slice(0, 30) + '...' :
-                                                                        book.title
-                                                                }
-                                                            </h2>
-                                                        </div>
-                                                    ))
+                                                        ))
                                                 }
                                             </div>
 
