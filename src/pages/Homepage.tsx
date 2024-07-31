@@ -34,7 +34,7 @@ const Homepage: React.FC = () => {
                 onSubmit={searchQuery}
                 action="submit">
                 <div>
-                    <h1 className='text-[#292929] text-[2.5rem] font-bold text-center'> SCHOLAR-VAULT</h1>
+                    <h1 className='text-[#292929] text-[2rem] font-bold text-center lg:text-[2.5rem]'> SCHOLAR-VAULT</h1>
                     <h3 className='text-[#292929] text-md font-medium text-center'>Your gateway to scholarly research. Discover, access, and cite academic papers with ease.</h3>
                 </div>
                 <div className='relative w-full w max-w-[700px] '>
@@ -49,7 +49,7 @@ const Homepage: React.FC = () => {
                 </div>
                 <div className='flex gap-1 text-[#888] text-[13px]'>
                     <div>Recommended:</div>
-                    <div className='flex gap-1 text-black font-semibold'>
+                    <div className='flex gap-1 text-black font-semibold text-center'>
                         Advancements in Artificial Intelligence
                     </div>
                 </div>
@@ -58,7 +58,7 @@ const Homepage: React.FC = () => {
                 <div className='h-full w-full gap-2 grid grid-cols-2 md:flex md:justify-between'>
                     <div className='w-full h-full bg-[#292929]  rounded-lg p-5 text-white flex flex-col justify-between items-start'>
                         <div>
-                            <div className='font-bold text-xl mb-3 md:text-2xl'>Comprehensive Research Database</div>
+                            <div className='font-bold text-xl mb-3 md:text-2xl break-all'>Comprehensive Research Database</div>
                             <p className='text-[12px] text-gray-400 lg:text-[17px] md:text-[13px]'>
                                 Access a vast repository of scholarly articles, research papers, and academic publications. AcademicNavigator offers an extensive collection of high-quality sources to support your academic pursuits and research projects.
                             </p>
@@ -69,7 +69,7 @@ const Homepage: React.FC = () => {
                     </div>
                     <div className='w-full h-full bg-[#292929]  rounded-lg p-5 text-white flex flex-col justify-between items-start'>
                         <div>
-                            <div className='font-bold text-xl mb-3 md:text-2xl'>Intuitive Search Functionality</div>
+                            <div className='font-bold text-xl mb-3 md:text-2xl break-all'>Intuitive Search Functionality</div>
                             <p className='text-[12px] text-gray-400 lg:text-[17px] md:text-[13px]'>
                                 Utilize advanced search tools to quickly and efficiently find relevant academic content. Our powerful search engine allows you to filter results by keywords, authors, publication date, and more, ensuring you can pinpoint the information you need.
                             </p>
