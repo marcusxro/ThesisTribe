@@ -376,10 +376,9 @@ const SaveDatas: React.FC = () => {
                     <div
                     onClick={() => {setIsDownload(null)}}
                     className='modalPos rounded-lg overflow-hidden flex flex-col'>
-                        
                         <div 
                         onClick={(e) => {e.stopPropagation()}}
-                        className='bg-[#f9f9f9]  w-[400px] h-[500px] rounded-lg overflow-hidden'>
+                        className='bg-[#f9f9f9] w-full max-w-[400px] h-[500px] rounded-lg overflow-hidden'>
                             <div className='flex justify-between px-3 py-2 bg-[#e6e6e6]'>
                                 <div className='cursor-pointer flex items-center' onClick={() => {setIsDownload(null)}}> <IoMdClose /></div>
                                 <div>Download As</div>
