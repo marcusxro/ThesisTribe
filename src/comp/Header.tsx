@@ -185,10 +185,10 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee, locString }) => {
                              cursor-pointer flex gap-3 items-center hover:bg-gray-700 font-semibold hover:text-white 
                             text-center w-full rounded-lg`}><IoIosHome className='text-xl' /> Home</div>
                         <div
-                             onClick={() => { nav('/Article') }}
+                            onClick={() => { nav('/Article') }}
                             className={` ${locString === 'Article' && 'bg-gray-300'} text-black py-3 px-2 rounded-lgtext-lg
                             cursor-pointer flex gap-3 items-center hover:bg-gray-700 font-semibold hover:text-white 
-                           text-center w-full rounded-lg`}><MdArticle  className='text-[15px]' /> Articles</div>
+                           text-center w-full rounded-lg`}><MdArticle className='text-[15px]' /> Articles</div>
                         <div
                             onClick={() => { nav('/book-finder/') }}
                             className={` ${locString === 'Book' && 'bg-gray-300'} text-black py-3 px-2 rounded-lgtext-lg
@@ -205,35 +205,35 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee, locString }) => {
 
                         {
                             user !== null &&
-                                <div className='flex flex-col'>
-                                    <div
-                                        onClick={() => { nav('/saved-datas') }}
-                                        className={` ${locString === 'Collection' && 'bg-gray-300'} text-black py-3 px-2 rounded-lgtext-lg
+                            <div className='flex flex-col'>
+                                <div
+                                    onClick={() => { nav('/saved-datas') }}
+                                    className={` ${locString === 'Collection' && 'bg-gray-300'} text-black py-3 px-2 rounded-lgtext-lg
                             cursor-pointer flex gap-3 items-center hover:bg-gray-700 font-semibold hover:text-white 
                            text-center w-full rounded-lg`}><MdCollectionsBookmark />Collection</div>
 
-                                </div>
+                            </div>
                         }
 
                     </div>
                     {
                         user != null ?
 
-                        <div className='w-full mt-auto border-t-[1px] pt-3 border-t-gray-300 px-3'>
-                            <div
-                                onClick={() => { SignOutAccout() }}
-                                className=' text-red-800 font-semibold text-lg hover:text-white 
+                            <div className='w-full mt-auto border-t-[1px] pt-3 border-t-gray-300 px-3'>
+                                <div
+                                    onClick={() => { SignOutAccout() }}
+                                    className=' text-red-800 font-semibold text-lg hover:text-white 
                                     py-3 px-2 rounded-lg cursor-pointer  hover:bg-gray-700 
                                     flex gap-3 items-center text-center'><IoIosLogOut />Log out</div>
-                        </div>
-                        :
-                        <div className='w-full mt-auto border-t-[1px] pt-3 border-t-gray-300 px-3'>
-                            <div
-                                onClick={() => { nav('/sign-in') }}
-                                className={` ${locString === 'Signin' && 'bg-gray-300'} text-black py-3 px-2 rounded-lgtext-lg
+                            </div>
+                            :
+                            <div className='w-full mt-auto border-t-[1px] pt-3 border-t-gray-300 px-3'>
+                                <div
+                                    onClick={() => { nav('/sign-in') }}
+                                    className={` ${locString === 'Signin' && 'bg-gray-300'} text-black py-3 px-2 rounded-lgtext-lg
                             cursor-pointer flex gap-3 items-center hover:bg-gray-700 font-semibold hover:text-white 
                            text-center w-full rounded-lg`}><CiLogin />Sign in</div>
-                        </div>
+                            </div>
                     }
                 </div>
             }
