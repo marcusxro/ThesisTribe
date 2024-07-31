@@ -8,6 +8,7 @@ import AutoScroll from 'embla-carousel-auto-scroll';
 import { FaDownload } from "react-icons/fa";
 import { FaArrowCircleUp } from "react-icons/fa";
 
+
 interface AuthorArr {
     name: string;
     birth_year: number | null;
@@ -189,7 +190,7 @@ const SearchedBook = () => {
 
     return (
         <div className='w-full h-auto'>
-            <Header inputSee={false} bookSee={true} />
+            <Header inputSee={false} bookSee={true} locString={'Book'} />
             <div className='w-full h-full'>
                 <div className='w-full max-w-[800px] font-semibold px-8 mb-1 border-b-[1px] border-b-[#e6e6e6]  py-3 mt-[80px] flex justify-between items-center gap-[80px] lg:justify-start md:max-w-[100%]'>
                     <div className='hidden md:block'>

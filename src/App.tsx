@@ -12,6 +12,10 @@ import CitationGenerator from './pages/CitationGenerator';
 import SignIn from './pages/SignIn';
 import CreateAccount from './pages/CreateAccount';
 import SaveDatas from './pages/SaveDatas';
+import Home from './pages/Home';
+import ScrollToTop from './comp/ScrollToTop';
+import ForgotPass from './comp/ForgotPass';
+import ForgotPassword from './pages/ForgotPassword';
 
 const App:React.FC= () => {
 
@@ -19,10 +23,15 @@ const App:React.FC= () => {
   return (
     <Router>
       <div className="App">
+        <ScrollToTop />
         <Routes>
-          <Route path='/' element={<Homepage />} />
+          <Route path='/' element={<Home />} />
+          <Route path='/Article' element={<Homepage />} />
+          
+
           <Route path='/sign-in' element={<SignIn />} />
           <Route path='/sign-up' element={<CreateAccount />} />
+          <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path='/search/:query/:page' element={<SearchedItem />} />
 
           <Route path='/book-finder/' element={<BookFinder />} />

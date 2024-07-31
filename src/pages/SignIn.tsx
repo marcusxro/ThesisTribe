@@ -22,7 +22,7 @@ const SignIn: React.FC = () => {
 
     return (
         <div className='w-full h-screen flex items-center justify-center p-3 min-h-[600px]'>
-            <Header inputSee={false} bookSee={false} />
+            <Header inputSee={false} bookSee={false} locString={'Signin'} />
             <SignInModal isDataSave={false} />
         </div>
     )

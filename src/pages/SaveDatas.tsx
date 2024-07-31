@@ -256,7 +256,7 @@ const SaveDatas: React.FC = () => {
                 </div>
             }
 
-            <Header bookSee={false} inputSee={false} />
+            <Header bookSee={false} inputSee={false} locString={'Collection'} />
             <div className='mt-[75px] bg-[#f3f2f2] border-[1px] w-full max-w-[1200px] mx-auto rounded-lg overflow-auto h-full min-h-[88vh] max-h-[88vh]'>
                 <div className='h-auto py-3 flex w-full items-center justify-between px-5'>
                     <div className='font-bold text-3xl'>My Collection</div>

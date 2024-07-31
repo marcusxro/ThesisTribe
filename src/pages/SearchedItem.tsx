@@ -407,7 +407,7 @@ const SearchedItem: React.FC = () => {
                     </div>
                 </div>
             }
-            <Header inputSee={true} bookSee={false} />
+            <Header inputSee={true} bookSee={false} locString={'Article'}/>
             {
                 openCiteModal && citeDetails &&
                 <CiteComp closer={setOpenCiteModal} citeDetails={citeDetails} />
