@@ -226,7 +226,7 @@ const ViewBook: React.FC = () => {
 
     return (
         <div className='relative'>
-            <Header inputSee={false} bookSee={true} />
+            <Header inputSee={false} bookSee={true} locString={'Book'} />
 
             {user?.emailVerified && isSaveBook &&
                 <div

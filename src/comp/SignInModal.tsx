@@ -64,7 +64,7 @@ const SignInModal: React.FC<boolType> = ({ isDataSave }) => {
                     return errorModal('Please verify your account first')
                 } else {
                     notif('User Signed in!')
-                       
+
                     // setTimeout(() => {
                     //     if (!isDataSave) {
                     //         nav(-1)
@@ -78,11 +78,32 @@ const SignInModal: React.FC<boolType> = ({ isDataSave }) => {
                         photoURL: user.photoURL,
                         uid: user.uid,
                     });
-            
-                }
 
+                }
             }).catch((err) => {
                 console.log(err)
+                if (err.code === 'auth/user-not-found') {
+                    errorModal('User not found!')
+                    setEmail('')
+                    setPassword('')
+                }
+                if (err.code === 'auth/wrong-password, please try again.') {
+                    errorModal('Wrong password')
+                    setEmail('')
+                    setPassword('')
+                }
+                if (err.code === 'auth/too-many-requests') {
+                    errorModal('Too many requests!')
+                    setEmail('')
+                    setPassword('')
+                } 
+                if (err.code === 'auth/invalid-credential') {
+                    errorModal('Invalid details!')
+                    setEmail('')
+                    setPassword('')
+                }
+
+
             })
     }
 
@@ -90,7 +111,7 @@ const SignInModal: React.FC<boolType> = ({ isDataSave }) => {
 
     const handleGoogleLogin = async () => {
         try {
-             await signInWithPopup(authKey, googleProvider);
+            await signInWithPopup(authKey, googleProvider);
         } catch (error) {
             console.error('Error during sign-in:', error);
         }
@@ -118,7 +139,9 @@ const SignInModal: React.FC<boolType> = ({ isDataSave }) => {
                 onChange={(e) => { setPassword(e.target.value) }}
                 type="password" />
             <div>
-                Forgot Password? <span className='cursor-pointer text-blue-400'>click here!</span>
+                Forgot Password? <span 
+                onClick={() => {nav('/forgot-password')}}
+                className='cursor-pointer text-blue-400'>click here!</span>
             </div>
 
             <button

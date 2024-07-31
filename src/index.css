@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+* {
+  font-family: "Lexend", sans-serif;
+}
+
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -33,36 +40,45 @@ code {
   width: 100%;
   padding-inline: 30px;
   gap: 10px;
-  background: rgba( 255, 255, 255, 0.25 );
-backdrop-filter: blur( 4px );
--webkit-backdrop-filter: blur( 4px );
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   align-items: center;
   z-index: 200000;
 }
 
+.rightShadow {
+  box-shadow: -5px -1px 9px -3px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: -5px -1px 9px -3px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: -5px -1px 9px -3px rgba(0, 0, 0, 0.75);
+}
 
+.lheight {
+  line-height: 90%;
+}
 
 .modalEl {
   position: fixed;
-  right: 30px;
-  top: 65px;
-  width: auto;
+  right: 0%;
+  top: 0;
+  width: 100%;
+  max-width: 200px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
   z-index: 10000;
+  background-color: #e6e6e6;
+  height: 100dvh;
+  align-items: flex-end;
 }
+
 @media only screen and (max-width: 800px) {
   .custom-pos {
     padding-inline: 10px;
   }
-  .modalEl {
-    right: 10px;
-  }
 }
 
 .seeTrough {
-background:rgb(226, 226, 226, 72%);
+  background: rgba(255, 255, 255, 0.70);
   position: fixed;
   top: 0;
   left: 0;
@@ -75,22 +91,68 @@ background:rgb(226, 226, 226, 72%);
 @tailwind components;
 @tailwind utilities;
 
+.blurred {
+  background: rgba(255, 255, 255, 0.70);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  align-items: center;
+  z-index: 200;  
+  position: relative;
+}
+.abso {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgb(146, 142, 142);
+  z-index: -1;
+}
+.goLow {
+  overflow: hidden;
+}
 
+.goLow::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px; /* Adjust this height to control the fading area */
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 1)); /* Adjust color and opacity as needed */
+  pointer-events: none;
+}
+
+.xText {
+  font-weight: 700;
+  color: #292929;
+  font-size: clamp(2.2rem, 5vw, 5rem);
+}
+.txt {
+  line-height: 90%;
+  word-break: normal;
+}
+.imgT {
+  width: 30%;
+  background-color: #888;
+  height: 3.5vw;
+  border-radius: 30px;
+}
 .modalPos {
   position: fixed;
   top: 50%;
   left: 50%;
   width: 100%;
   z-index: 20000000;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   height: 100dvh;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(53, 52, 52, 0.25);
-  backdrop-filter: blur( 4px );
-  -webkit-backdrop-filter: blur( 4px );
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   padding: 10px;
 }
 
@@ -99,7 +161,8 @@ background:rgb(226, 226, 226, 72%);
 }
 
 .modalPos embed {
-  scrollbar-width: none; /* For Firefox */
+  scrollbar-width: none;
+  /* For Firefox */
   width: 100%;
   max-width: 700px;
   height: 90%;
