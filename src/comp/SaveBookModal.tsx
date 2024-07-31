@@ -4,65 +4,75 @@ import { firestoreKey } from '../firebase/FirebaseKey';
 import { collection, getDocs, addDoc, updateDoc, doc, arrayUnion } from 'firebase/firestore';
 import IsUser from './IsUser';
 
-interface Author {
+
+interface AuthorArr {
     name: string;
-    affiliation?: string;
-    family: string;
-    given: string;
-    sequence: string;
+    birth_year: number | null;
+    death_year: number | null;
 }
 
-interface ResponseObject {
-    best_oa_location: any;
-    data_standard: number;
-    doi: string;
-    doi_url: string;
-    first_oa_location: any;
-    genre: string;
-    has_repository_copy: boolean;
-    is_oa: boolean;
-    is_paratext: boolean;
-    journal_is_in_doaj: boolean;
-    journal_is_oa: boolean;
-    journal_issn_l: string;
-    journal_issns: string;
-    journal_name: string;
-    oa_locations: any[];
-    oa_locations_embargoed: any[];
-    oa_status: string;
-    publisher: string;
+interface BookFormats {
+    epub: string;
+    zip: string;
+    rdf: string;
+    mobi: string;
+    coverImage: string;
+    html: string;
+    htmlISO: string;
+    plainTextISO: string;
+    plainTextASCII: string;
+    'application/epub+zip': string;
+    'application/octet-stream': string;
+    'application/rdf+xml': string;
+    'application/x-mobipocket-ebook': string;
+    'image/jpeg': string;
+    'text/html': string;
+    'text/plain; charset=us-ascii': string;
+}
+
+interface ResultType {
+    authors: AuthorArr[];
+    bookshelves: string[];
+    copyright: boolean;
+    download_count: number;
+    formats: BookFormats;
+    id: number;
+    languages: string[];
+    media_type: string;
+    subjects: string[];
     title: string;
-    updated: string;
-    year: number;
-    z_authors: Author[];
-    Link: string;
+    translators: string[];
 }
 
-interface CollectionType {
-    collectionName: string;
-    items: ResponseObject[];
+interface OuterData {
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: ResultType[];
 }
+
+interface paramType {
+    objectItem: ResultType;
+    closer: React.Dispatch<React.SetStateAction<boolean | null>>; // Ensure this is a bool
+}
+
 
 interface DataType {
     id: string;
     Uid: string;
     name: string;
-    MyCollection: ResponseObject[];
-    Collections: CollectionType[];
+    MyCollection: any;
+    MyBook: ResultType[]
 }
 
-interface SaveModalProps {
-    objectItem: ResponseObject;
-    closer: React.Dispatch<React.SetStateAction<ResponseObject | null>>;
-}
 
-const SaveModal: React.FC<SaveModalProps> = ({ objectItem, closer }) => {
-
+const SaveBookModal: React.FC<paramType> = ({ objectItem, closer }) => {
     const [isChecked, setIsChecked] = useState<boolean>(false);
     const [user] = IsUser();
     const [data, setData] = useState<DataType[]>([]);
     const [filteredArr, setFilteredArr] = useState<DataType[]>([]);
     const [isSaved, setIsSaved] = useState<boolean>(false);
+
 
     useEffect(() => {
         if (user) {
@@ -87,50 +97,48 @@ const SaveModal: React.FC<SaveModalProps> = ({ objectItem, closer }) => {
 
 
 
+    useEffect(() => {
+        if (user) {
+            const handleAdd = async () => {
+                try {
+                    // Fetch all documents in the collection
+                    const querySnapshot = await getDocs(collection(firestoreKey, 'userCollectionOfSave'));
 
-   useEffect(() => {
-    if (user) {
-        const handleAdd = async () => {
-            try {
-                // Fetch all documents in the collection
-                const querySnapshot = await getDocs(collection(firestoreKey, 'userCollectionOfSave'));
-                
-                // Find the document for the current user
-                const userDoc = querySnapshot.docs.find(doc => doc.data().Uid === user.uid);
-                
-                // If the user document is found
-                if (userDoc) {
-                    // Check if MyCollection field exists
-                    const userData = userDoc.data();
-                    if (!Array.isArray(userData.MyCollection)) {
-                        // Update the document to include an empty MyCollection array
-                        await updateDoc(doc(firestoreKey, 'userCollectionOfSave', userDoc.id), {
-                            MyCollection: []
+                    // Find the document for the current user
+                    const userDoc = querySnapshot.docs.find(doc => doc.data().Uid === user.uid);
+
+                    // If the user document is found
+                    if (userDoc) {
+                        // Check if MyBook field exists
+                        const userData = userDoc.data();
+                        if (!Array.isArray(userData.MyBook)) {
+                            // Update the document to include an empty MyBook array
+                            await updateDoc(doc(firestoreKey, 'userCollectionOfSave', userDoc.id), {
+                                MyBook: []
+                            });
+                        }
+                    } else {
+                        // If the user document is not found, create a new one
+                        await addDoc(collection(firestoreKey, 'userCollectionOfSave'), {
+                            name: user.displayName || user.email,
+                            Uid: user.uid,
+                            MyBook: [] // Ensure this is initialized as an array
                         });
                     }
-                } else {
-                    // If the user document is not found, create a new one
-                    await addDoc(collection(firestoreKey, 'userCollectionOfSave'), {
-                        name: user.displayName || user.email,
-                        Uid: user.uid,
-                        MyCollection: [] // Ensure this is initialized as an array
-                    });
+
+                    // Update the local state
+                    setFilteredArr(prev => prev.map(item =>
+                        item.Uid === user?.uid ? { ...item, MyBook: Array.isArray(item.MyBook) ? [...item.MyBook] : [] } : item
+                    ));
+
+                } catch (error) {
+                    console.error("Error updating user: ", error);
                 }
+            };
 
-                // Update the local state
-                setFilteredArr(prev => prev.map(item =>
-                    item.Uid === user.uid ? { ...item, MyCollection: Array.isArray(item.MyCollection) ? [...item.MyCollection] : [] } : item
-                ));
-                
-            } catch (error) {
-                console.error("Error updating user: ", error);
-            }
-        };
-
-        handleAdd();
-    }
-}, [user, data]);
-
+            handleAdd();
+        }
+    }, [user, data]);
 
 
     const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -147,26 +155,32 @@ const SaveModal: React.FC<SaveModalProps> = ({ objectItem, closer }) => {
                     const userDocRef = doc(firestoreKey, 'userCollectionOfSave', existingUserDoc.id);
 
                     await updateDoc(userDocRef, {
-                        MyCollection: arrayUnion({
-                            Title: objectItem.title,
-                            Link: objectItem.doi_url,
-                            Publisher: objectItem.publisher,
-                            Year: objectItem.year,
-                            Genre: objectItem.genre,
-                            Updated: objectItem.updated,
-                            Authors: objectItem.z_authors,
-                            type: 'article'
+                        MyBook: arrayUnion({
+                            title: objectItem.title,
+                            formats: objectItem.formats,
+                            authors: objectItem.authors,
+                            bookshelves: objectItem.bookshelves,
+                            copyright: objectItem.copyright,
+                            download_count: objectItem.download_count,
+                            id: objectItem.id,
+                            languages: objectItem.languages,
+                            media_type: objectItem.media_type,
+                            subjects: objectItem.subjects,
+                            translators: objectItem.translators,
+                            type: 'boook'
                         }),
                     });
 
                     setIsSaved(true);
-                    closer(null);
+                    closer(false);
                 }
             } catch (error) {
                 console.error("Error adding to collection: ", error);
             }
         }
     };
+
+
 
     const handleDelete = async () => {
         if (objectItem && user?.uid) {
@@ -177,15 +191,15 @@ const SaveModal: React.FC<SaveModalProps> = ({ objectItem, closer }) => {
                 if (existingUserDoc) {
                     const userDocRef = doc(firestoreKey, 'userCollectionOfSave', existingUserDoc.id);
 
-                    const updatedMyCollection = existingUserDoc.data().MyCollection.filter((item: ResponseObject) =>
-                        item.Link !== objectItem.doi_url);
+                    const updatedMyCollection = existingUserDoc.data().MyBook.filter((item: ResultType) =>
+                        item.id !== objectItem.id);
 
                     await updateDoc(userDocRef, {
-                        MyCollection: updatedMyCollection,
+                        MyBook: updatedMyCollection,
                     });
 
                     setIsSaved(false);
-                    closer(null);
+                    closer(false);
                 }
             } catch (error) {
                 console.error("Error deleting from collection: ", error);
@@ -194,14 +208,16 @@ const SaveModal: React.FC<SaveModalProps> = ({ objectItem, closer }) => {
     };
 
     const isItemSaved = useCallback(() => {
-        return filteredArr.some(userItem =>
-         {
-            if(userItem?.MyCollection) {
-                userItem.MyCollection.some(collectionItem => collectionItem.Link === objectItem.doi_url)
+        return filteredArr.some(userItem => {
+            if (userItem?.MyBook) {
+
+                return userItem.MyBook.some(collectionItem => collectionItem.id === objectItem.id)
             }
-         }
+        }
         );
     }, [filteredArr, objectItem]);
+
+
 
     useEffect(() => {
         setIsSaved(isItemSaved());
@@ -227,10 +243,10 @@ const SaveModal: React.FC<SaveModalProps> = ({ objectItem, closer }) => {
     return (
         <div className='flex flex-col w-full max-w-[400px] bg-[#f9f9f9] rounded-lg book'>
             <div className='h-[40px] w-full flex items-center justify-between bg-[#e6e6e6] px-3'>
-                <div onClick={() => closer(null)} className='cursor-pointer'>
+                <div onClick={() => closer(false)} className='cursor-pointer'>
                     <IoMdClose />
                 </div>
-                <div>Save Article</div>
+                <div>Save Book</div>
             </div>
             {filteredArr && filteredArr.length === 0 ? (
                 <div className='w-full h-[100px] flex items-center justify-center flex-col'>
@@ -247,6 +263,7 @@ const SaveModal: React.FC<SaveModalProps> = ({ objectItem, closer }) => {
                         </g>
                     </svg>
                     {showDiv && <div className='text-[13px] text-gray-500'>If this takes a while, please reload the process.</div>}
+
                 </div>
             ) : (
                 <div className='p-3 px-5 bg-white'>
@@ -260,7 +277,7 @@ const SaveModal: React.FC<SaveModalProps> = ({ objectItem, closer }) => {
                         </div>
                         {filteredArr.map((itm) => (
                             <div key={itm.id}>
-                                <div className='flex gap-1 items-center'>
+                                <div className='flex gap-1 items-center mt-3'>
                                     <input
                                         className="pt-2"
                                         type="checkbox"
@@ -268,16 +285,16 @@ const SaveModal: React.FC<SaveModalProps> = ({ objectItem, closer }) => {
                                         onChange={handleCheckboxChange}
                                     />
                                     <div>
-                                        My Collection
+                                        My Book Collection
                                     </div>
                                 </div>
-                                <div>
-                                    {itm?.MyCollection && itm.MyCollection.length > 0 &&
-                                        itm.MyCollection.map((z, index) => (
+                                {/* <div>
+                                    {itm?.MyBook && itm.MyBook.length > 0 &&
+                                        itm.MyBook.map((z, index) => (
                                             <div key={index}>{z.title}</div>
                                         ))
                                     }
-                                </div>
+                                </div> */}
                             </div>
                         ))}
                     </div>
@@ -307,7 +324,7 @@ const SaveModal: React.FC<SaveModalProps> = ({ objectItem, closer }) => {
                 )}
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default SaveModal;
+export default SaveBookModal

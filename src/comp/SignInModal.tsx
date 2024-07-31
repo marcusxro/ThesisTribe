@@ -57,26 +57,21 @@ const SignInModal: React.FC<boolType> = ({ isDataSave }) => {
         }
         signInWithEmailAndPassword(authKey, email, password)
             .then((res) => {
-
-
                 const user = res.user
-
-
                 const isVerified = res.user.emailVerified
-
                 console.log(isVerified)
-
-
                 if (!isVerified) {
                     return errorModal('Please verify your account first')
                 } else {
                     notif('User Signed in!')
                        
-                    setTimeout(() => {
-                        if (!isDataSave) {
-                            nav(-1)
-                        }
-                    }, 1000);
+                    // setTimeout(() => {
+                    //     if (!isDataSave) {
+                    //         nav(-1)
+                    //     } else {
+                    //         nav(-1)
+                    //     }
+                    // }, 1000);
                     console.log('User Info:', {
                         displayName: user.displayName,
                         email: user.email,

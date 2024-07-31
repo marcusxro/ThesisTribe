@@ -58,6 +58,7 @@ interface DataObject {
     response: ResponseObject;
     score: number;
     snippet: string;
+    
 }
 
 
@@ -357,14 +358,16 @@ const SearchedItem: React.FC = () => {
 
 
     const isItemSaved = (response: any) => {
-        return data.some((userItem: any) => {
+        return data?.some((userItem: any) => {
             if (userItem.Uid === user?.uid) {
-                return userItem.MyCollection.some((collectionItem: any) => {
-                    if (collectionItem.Link === response.doi_url) {
-                        return true;
-                    }
-                    return false;
-                });
+                if(userItem?.MyCollection) {
+                    return userItem?.MyCollection.some((collectionItem: any) => {
+                        if (collectionItem.Link === response.doi_url) {
+                            return true;
+                        }
+                        return false;
+                    });
+                }
             }
             return false;
         });
@@ -375,7 +378,7 @@ const SearchedItem: React.FC = () => {
     return (
         <div className='h-auto'>
             {
-                objToSave != null && user?.emailVerified &&
+                objToSave && user?.emailVerified  &&
                 <div
                     onClick={() => {
                         closeSaveModal()
@@ -386,7 +389,7 @@ const SearchedItem: React.FC = () => {
                             e.stopPropagation()
                         }}
                         className='max-w-[400px] w-full'>
-                        <SaveModal objectItem={objToSave} closer={setObjToSave} />
+                        <SaveModal objectItem={objToSave && objToSave} closer={setObjToSave} />
                     </div>
                 </div>
             }
