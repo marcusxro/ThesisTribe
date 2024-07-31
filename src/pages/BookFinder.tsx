@@ -73,7 +73,7 @@ const BookFinder: React.FC = () => {
             <Header inputSee={false} bookSee={false} locString={'Book'} />
             <div className='w-full min-h-[400px] h-[80vh] flex items-center flex-col justify-center gap-5 md:h-[50vh]'>
                 <div>
-                    <h1 className='text-[#292929] text-[3rem] font-bold text-center'>
+                    <h1 className='text-[#292929] text-[2rem] font-bold text-center lg:text-[2.5rem]'>
                         BOOK-FINDER
                     </h1>
                     <h3 className='text-[#292929] text-md font-medium text-center'>
