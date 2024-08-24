@@ -299,7 +299,37 @@ const SaveDatas: React.FC = () => {
     }
 
 
+    const [isDeleteCI, setIsDeleteCI] = useState<string | null | number>(null)
 
+
+
+    
+    const handleDeleteCIData = async (params: number | string) => {
+        if (data && user?.uid) {
+            try {
+                const querySnapshot = await getDocs(collection(firestoreKey, 'userCollectionOfSave'));
+                const existingUserDoc = querySnapshot.docs.find(doc => doc.data().Uid === user.uid);
+
+                if (existingUserDoc) {
+                    const userDocRef = doc(firestoreKey, 'userCollectionOfSave', existingUserDoc.id);
+
+                    const updatedMyCollection = existingUserDoc.data().MyComputationArr.filter((item: MyComputationArrContent) =>
+
+                        item.docID !== params);
+
+                    await updateDoc(userDocRef, {
+                        MyComputationArr: updatedMyCollection,
+                    });
+
+                }
+                fetchData()
+                notif()
+                setDeleteLinks(null)
+            } catch (error) {
+                console.error("Error deleting from collection: ", error);
+            }
+        }
+    };
 
     return (
         <div className='w-full h-full p-3'>
@@ -588,7 +618,23 @@ const SaveDatas: React.FC = () => {
                                                         </div>
 
                                                         <div className='mt-auto pt-3 flex gap-3 items-center justify-start'>
-                                                            <div className='bg-red-500 py-1 px-3 rounded-lg'>Delete</div>
+                                                            {
+                                                                z.docID != isDeleteCI ?
+                                                                    <div
+                                                                        onClick={() => { setIsDeleteCI(z.docID) }}
+                                                                        className='bg-red-500 py-1 px-3 rounded-lg'>Delete</div>
+                                                                    :
+                                                                    <div className='flex gap-3'>
+
+                                                                        <div
+                                                                            onClick={() => { handleDeleteCIData(z.docID) }}
+                                                                            className='bg-green-500 py-1 px-3 rounded-lg'>Confirm</div>
+                                                                        <div
+                                                                            onClick={() => { setIsDeleteCI(null) }}
+                                                                            className='bg-red-500 py-1 px-3 rounded-lg'>Cancel</div>
+                                                                    </div>
+                                                            }
+
                                                             <div className='bg-green-500 py-1 px-3 rounded-lg'>View</div>
                                                         </div>
                                                     </div>
