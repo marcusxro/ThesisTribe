@@ -7,7 +7,7 @@ import axios from 'axios';
 import { FaGithub } from "react-icons/fa";
 import { FaFacebook } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa";
-// import LoadingSvg from '../comp/LoadingSvg';
+import LoadingSvg from '../comp/LoadingSvg';
 import IsUser from '../comp/IsUser';
 import SignInModal from '../comp/SignInModal';
 import SaveResultFromCom from '../comp/SaveResultFromCom';
@@ -85,7 +85,7 @@ const Computational: React.FC = () => {
 
 
       return (
-        <div key={index} className="pod w-full max-w-[1200px] flex flex-col gap-3 items-start justify-start">
+        <div key={index} className="overflow-auto border-t-gray-600 border-t-[1px] my-4 pod w-full max-w-[1200px] flex flex-col gap-3 items-start justify-start">
           <h2 className='font-semibold w-auto p-3 bg-gray-700 text-white mt-2 rounded-lg'>{title}</h2>
           {Array.from(subpods).map((subpod, subIndex) => {
             const subpodElement = subpod as Element;
@@ -166,7 +166,7 @@ const Computational: React.FC = () => {
                 <div className='w-full h-[36vh] flex items-center justify-center bg-gray-200 rounded-lg mb-3'>
                   <div className='flex flex-col gap-1 items-start justify-start'>
                     <div className='mx-auto'>
-                      {/* <LoadingSvg /> */}
+                      <LoadingSvg />
                     </div>
                     <p className='text-[13px] text-gray-600'>Finding result based on your question</p>
                   </div>
@@ -178,7 +178,7 @@ const Computational: React.FC = () => {
                       onClick={() => { setSaveModal(true) }}
                       className='bg-green-500 text-white rounded-lg py-1 px-3'>Save</button>
                   </div>
-                  <div className='p-3  w-full h-auto bg-[#292929] rounded-lg'>
+                  <div className='p-3  w-full h-auto bg-[#292929] rounded-lg overflow-hidden'>
                     {renderXmlResult()}
                   </div>
                 </div>

@@ -4,7 +4,7 @@ import IsUser from './IsUser';
 import { collection, getDocs, addDoc, updateDoc, doc, arrayUnion, } from 'firebase/firestore';
 import { firestoreKey } from '../firebase/FirebaseKey';
 
-
+import LoadingSvg from './LoadingSvg';
 
 interface Author {
     name: string;
@@ -269,7 +269,7 @@ const SaveResultFromCom: React.FC<xmlItm> = ({ resultToSave, closer }) => {
                     </div>
                     :
                     <div className='flex gap-3 px-3 h-[100px] items-center justify-center'>
-                        {/* <LoadingSvg /> */}
+                        <LoadingSvg />
                     </div>
             }
             <div className='h-[40px] w-full flex items-center justify-between bg-[#e6e6e6] px-3'>
