@@ -14,6 +14,7 @@ import { IoMdClose } from "react-icons/io";
 import LogOutUser from '../comp/LogOutUser'
 import 'react-toastify/dist/ReactToastify.css';
 import CiteComp from '../comp/CiteComp';
+import ViewCIData from '../comp/ViewCIData';
 
 interface Author {
     name: string;
@@ -300,10 +301,9 @@ const SaveDatas: React.FC = () => {
 
 
     const [isDeleteCI, setIsDeleteCI] = useState<string | null | number>(null)
+    const [isViewCIData, setIsViewCIData] = useState<string | null>(null)
 
 
-
-    
     const handleDeleteCIData = async (params: number | string) => {
         if (data && user?.uid) {
             try {
@@ -340,7 +340,13 @@ const SaveDatas: React.FC = () => {
                     <CiteComp closer={handleCloser} citeDetails={citeObject} />
                 </div>
             }
-
+            {
+                isViewCIData && isViewCIData != null &&
+                <div
+           >
+                    <ViewCIData params={isViewCIData} closer={setIsViewCIData} />
+                </div>
+            }
             <Header bookSee={false} inputSee={false} locString={'Collection'} />
             <div className='mt-[75px] bg-[#f3f2f2] border-[1px] w-full max-w-[1200px] mx-auto rounded-lg overflow-auto h-full min-h-[88vh] max-h-[88vh]'>
                 <div className='h-auto py-3 flex w-full items-center justify-between px-5'>
@@ -635,7 +641,9 @@ const SaveDatas: React.FC = () => {
                                                                     </div>
                                                             }
 
-                                                            <div className='bg-green-500 py-1 px-3 rounded-lg'>View</div>
+                                                            <div
+                                                            onClick={() => {setIsViewCIData(z.resultItem)}}
+                                                             className='bg-green-500 py-1 px-3 rounded-lg'>View</div>
                                                         </div>
                                                     </div>
                                                 ))}
