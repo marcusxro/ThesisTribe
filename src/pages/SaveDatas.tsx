@@ -95,20 +95,27 @@ interface ResultType {
     translators: string[];
     type: string
 }
+interface MyComputationArrContent {
+    docID: string | number;
+    resultItem: string;
+    type: string;
+}
+
+
 interface DataType {
     id: string;
     Uid: string;
     name: string;
     MyCollection: ResponseObject[];
-    MyBook: ResultType[]
+    MyBook: ResultType[];
+    MyComputationArr: MyComputationArrContent[];
 }
 
 const SaveDatas: React.FC = () => {
     const [data, setData] = useState<DataType[]>([]);
-    const [user] = IsUser(); // Ensure this returns the current user
+    const [user] = IsUser();
     const [tabination, setTabination] = useState<string>("Article");
     const nav = useNavigate();
-
 
 
     const fetchData = async () => {
@@ -123,7 +130,6 @@ const SaveDatas: React.FC = () => {
             const filteredData = dataList.filter((itm) => itm.Uid === user?.uid);
 
             // Set the filtered data
-
             setData(filteredData)
 
         } catch (error) {
@@ -134,6 +140,7 @@ const SaveDatas: React.FC = () => {
     useEffect(() => {
         if (user) {
             fetchData();  // Fetch data when user changes
+            console.log(data)
         }
     }, [user]);
 
@@ -238,6 +245,7 @@ const SaveDatas: React.FC = () => {
             }
         }
     };
+
     const [onLoad, setOnLoad] = useState<boolean>(true)
     const [isId, setIsID] = useState<number | null>(null)
     const [isDownload, setIsDownload] = useState<number | null>(null)
@@ -245,10 +253,57 @@ const SaveDatas: React.FC = () => {
     function handleLoad() {
         setOnLoad(false)
     }
+
+
+
+    function getInputStringFromComputation(params: string) {
+        const parser = new DOMParser();
+        const toXml = parser.parseFromString(params, 'application/xhtml+xml');
+        const queryResultEls = toXml.getElementsByTagName('queryresult');
+        const inputString = queryResultEls.length > 0
+            ? queryResultEls[0]?.getAttribute('inputstring')
+            : '';
+
+        // Extract the second image URL from the pods
+        const pods = toXml.getElementsByTagName('pod') as any;
+        let imageCount = 0;
+        let secondImageUrl: string | null = null;
+
+        for (const pod of pods) {
+            const subpods = pod.getElementsByTagName('subpod');
+            for (const subpod of subpods) {
+                const imgEl = subpod.getElementsByTagName('img')[0];
+                if (imgEl) {
+                    imageCount++;
+                    if (imageCount === 1) {
+                        secondImageUrl = imgEl.getAttribute('src');
+                        break; // Exit the loop once the second image is found
+                    }
+                }
+            }
+            if (secondImageUrl) break; // Exit the outer loop once the second image is found
+        }
+
+        return (
+            <div>
+                {inputString && <div>Input: {inputString}</div>}
+
+                {secondImageUrl &&
+                    <div className='w-full h-full rounded-md overflow-hidden'>
+                        <img className='w-full h-auto object-contain' src={secondImageUrl} alt="Second result image" />
+                    </div>
+                }
+
+            </div>
+        );
+    }
+
+
+
+
     return (
         <div className='w-full h-full p-3'>
             <ToastContainer />
-
             {
                 citeObject != null && boolRender &&
                 <div>
@@ -275,6 +330,11 @@ const SaveDatas: React.FC = () => {
                         className={`cursor-pointer pb-[11px] ${tabination === "Books" ? 'border-b-[3px] font-semibold border-black' : ''}`}>
                         Books
                     </div>
+                    <div
+                        onClick={() => setTabination("Computation")}
+                        className={`cursor-pointer pb-[11px] ${tabination === "Computation" ? 'border-b-[3px] font-semibold border-black' : ''}`}>
+                        Computation
+                    </div>
                 </div>
 
                 {
@@ -286,7 +346,7 @@ const SaveDatas: React.FC = () => {
                                 <div key={filteredItem.id} className='grid grid-cols-1 p-5 gap-3 lg:grid-cols-3 md:grid-cols-2 overflow-auto'>
 
                                     <>
-                                        {filteredItem?.MyCollection?.length === 0 && <div>No items</div>}
+                                        {filteredItem?.MyCollection?.length === 0 && <div>No Articles</div>}
                                         {filteredItem?.MyCollection?.slice().reverse().map((z) => (
                                             <div className='cursor-pointer flex items-start flex-col bg-[#3d3d3d] text-white p-3 rounded-lg'>
 
@@ -337,7 +397,6 @@ const SaveDatas: React.FC = () => {
                 }
                 {
                     isRead != null && isRead.id === isId &&
-    
                     <div
                         onClick={() => { setIsRead(null) }}
                         className='modalPos rounded-lg overflow-hidden flex flex-col'>
@@ -374,35 +433,35 @@ const SaveDatas: React.FC = () => {
                 {
                     isRead != null && isRead.id === isDownload &&
                     <div
-                    onClick={() => {setIsDownload(null)}}
-                    className='modalPos rounded-lg overflow-hidden flex flex-col'>
-                        <div 
-                        onClick={(e) => {e.stopPropagation()}}
-                        className='bg-[#f9f9f9] w-full max-w-[400px] h-[500px] rounded-lg overflow-hidden'>
+                        onClick={() => { setIsDownload(null) }}
+                        className='modalPos rounded-lg overflow-hidden flex flex-col'>
+                        <div
+                            onClick={(e) => { e.stopPropagation() }}
+                            className='bg-[#f9f9f9] w-full max-w-[400px] h-[500px] rounded-lg overflow-hidden'>
                             <div className='flex justify-between px-3 py-2 bg-[#e6e6e6]'>
-                                <div className='cursor-pointer flex items-center' onClick={() => {setIsDownload(null)}}> <IoMdClose /></div>
+                                <div className='cursor-pointer flex items-center' onClick={() => { setIsDownload(null) }}> <IoMdClose /></div>
                                 <div>Download As</div>
                             </div>
                             <div className='w-full h-full flex flex-col px-3 py-2 gap-3'>
                                 <div
-                                className='w-full h-[50px] max-h-[50px] flex items-center justify-center rounded-lg text-black font-semibold cursor-pointer bg-green-300'
-                                 onClick={() => {window.open(isRead?.formats?.['application/epub+zip'], "_blank")}}>
+                                    className='w-full h-[50px] max-h-[50px] flex items-center justify-center rounded-lg text-black font-semibold cursor-pointer bg-green-300'
+                                    onClick={() => { window.open(isRead?.formats?.['application/epub+zip'], "_blank") }}>
                                     EPUB
                                 </div>
                                 <div
-                                className='w-full h-[50px] max-h-[50px] flex items-center justify-center rounded-lg text-black font-semibold cursor-pointer bg-blue-300'
+                                    className='w-full h-[50px] max-h-[50px] flex items-center justify-center rounded-lg text-black font-semibold cursor-pointer bg-blue-300'
 
-                                 onClick={() => {window.open(isRead?.formats?.['application/octet-stream'], "_blank")}}>
+                                    onClick={() => { window.open(isRead?.formats?.['application/octet-stream'], "_blank") }}>
                                     ZIP
                                 </div>
                                 <div
-                                className='w-full h-[50px] max-h-[50px] flex items-center justify-center rounded-lg text-black font-semibold cursor-pointer bg-yellow-300'
-                                 onClick={() => {window.open(isRead?.formats?.['application/x-mobipocket-ebook'], "_blank")}}>
+                                    className='w-full h-[50px] max-h-[50px] flex items-center justify-center rounded-lg text-black font-semibold cursor-pointer bg-yellow-300'
+                                    onClick={() => { window.open(isRead?.formats?.['application/x-mobipocket-ebook'], "_blank") }}>
                                     MOBI
                                 </div>
                                 <div
-                                className='w-full h-[50px] max-h-[50px] flex items-center justify-center rounded-lg text-black font-semibold cursor-pointer bg-orange-300'
-                                 onClick={() => {window.open(isRead?.formats?.['application/rdf+xml'], "_blank")}}>
+                                    className='w-full h-[50px] max-h-[50px] flex items-center justify-center rounded-lg text-black font-semibold cursor-pointer bg-orange-300'
+                                    onClick={() => { window.open(isRead?.formats?.['application/rdf+xml'], "_blank") }}>
                                     RDF
                                 </div>
                             </div>
@@ -414,84 +473,137 @@ const SaveDatas: React.FC = () => {
 
                     <div className='w-full overflow-auto'>
                         {data.length > 0 ? (
-                            data.map((filteredItem) => (
-                                <div key={filteredItem.id} className='grid grid-cols-1 p-5 gap-3 lg:grid-cols-3 md:grid-cols-2 overflow-auto'>
-                                    <>
-                                        {filteredItem?.MyBook?.length === 0 && <div>No items</div>}
-                                        {filteredItem?.MyBook?.slice().reverse().map((z) => (
-                                            <div className='cursor-pointer flex flex-col items-start gap-3  bg-[#383636] text-white p-3 rounded-lg'>
-                                                <div className='flex gap-3 p-3'>
-                                                    <div className='h-[250px] w-[200px] flex items-start bg-red-300 overflow-hidden rounded-lg'>
-                                                        <img
-                                                            className='object-cover w-full h-full'
-                                                            src={z.formats['image/jpeg']} alt="" />
-                                                    </div>
-                                                    <div className='flex flex-col gap-2 w-[50%] break-all break-words'>
-                                                        <div className='font-semibold'>
-                                                            {z.title.length > 20 ? z.title.slice(0, 20) + '...' : z.title}
+                            <>
+                                {
+                                    data.map((filteredItem) => (
+                                        <div key={filteredItem.id} className='grid grid-cols-1 p-5 gap-3 lg:grid-cols-3 md:grid-cols-2 overflow-auto'>
+                                            <>
+                                                {
+                                                    (!filteredItem?.MyBook || filteredItem.MyBook.length === 0) && (
+                                                        <div>No Books</div>
+                                                    )
+                                                }
+
+                                                {filteredItem?.MyBook?.slice().reverse().map((z) => (
+                                                    <div className='cursor-pointer flex flex-col items-start gap-3  bg-[#383636] text-white p-3 rounded-lg'>
+                                                        <div className='flex gap-3 p-3'>
+                                                            <div className='h-[250px] w-[200px] flex items-start bg-red-300 overflow-hidden rounded-lg'>
+                                                                <img
+                                                                    className='object-cover w-full h-full'
+                                                                    src={z.formats['image/jpeg']} alt="" />
+                                                            </div>
+                                                            <div className='flex flex-col gap-2 w-[50%] break-all break-words'>
+                                                                <div className='font-semibold'>
+                                                                    {z.title.length > 20 ? z.title.slice(0, 20) + '...' : z.title}
+                                                                </div>
+                                                                <div className='text-[13px] text-gray-300'>
+                                                                    Downloads: <span>{z.download_count}</span>
+                                                                </div>
+                                                                <div className='flex flex-wrap gap-2 text-[13px] text-gray-300'>
+                                                                    <div>Language:</div>
+                                                                    {
+                                                                        z.languages.map((x) => (
+                                                                            <div>{x}</div>
+                                                                        ))
+                                                                    }
+                                                                </div>
+                                                                <div className='flex flex-wrap gap-2 text-[13px] text-gray-300'>
+                                                                    <div>Subjects</div>
+                                                                    {
+                                                                        z.subjects.slice(0, 1).map((x) => (
+                                                                            <div>{x}</div>
+                                                                        ))
+                                                                    }
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div className='text-[13px] text-gray-300'>
-                                                            Downloads: <span>{z.download_count}</span>
-                                                        </div>
-                                                        <div className='flex flex-wrap gap-2 text-[13px] text-gray-300'>
-                                                            <div>Language:</div>
+
+                                                        <div className='px-3'>
                                                             {
-                                                                z.languages.map((x) => (
-                                                                    <div>{x}</div>
-                                                                ))
+                                                                z.id === deleteLinks ?
+                                                                    <div className='flex gap-3'>
+
+                                                                        <div
+                                                                            onClick={() => { handleDeletes(z.id) }}
+                                                                            className='bg-green-500 py-1 px-3 rounded-lg'>Confirm</div>
+                                                                        <div
+                                                                            onClick={() => { setDeleteLinks(null) }}
+                                                                            className='bg-red-500 py-1 px-3 rounded-lg'>Cancel</div>
+                                                                    </div>
+                                                                    :
+                                                                    <div className='flex gap-3 flex-wrap'>
+                                                                        <div
+                                                                            onClick={() => { setDeleteLinks(z.id) }}
+                                                                            className='bg-red-500 py-1 px-3 rounded-lg'>Delete</div>
+                                                                        <div
+                                                                            onClick={() => { setIsRead(z); setIsID(z.id) }}
+                                                                            className='bg-green-500 py-1 px-3 rounded-lg'>Read</div>
+                                                                        <div
+                                                                            onClick={() => { window.open(z.formats['text/html'], '_blank') }}
+                                                                            className='bg-blue-500 py-1 px-3 rounded-lg'>Visit</div>
+                                                                        <div
+                                                                            onClick={() => { setIsDownload(z.id); setIsRead(z) }}
+                                                                            className='bg-gray-500 py-1 px-3 rounded-lg'>Download</div>
+                                                                    </div>
                                                             }
                                                         </div>
-                                                        <div className='flex flex-wrap gap-2 text-[13px] text-gray-300'>
-                                                            <div>Subjects</div>
-                                                            {
-                                                                z.subjects.slice(0, 1).map((x) => (
-                                                                    <div>{x}</div>
-                                                                ))
-                                                            }
-                                                        </div>
                                                     </div>
-                                                </div>
-
-                                                <div className='px-3'>
-                                                    {
-                                                        z.id === deleteLinks ?
-                                                            <div className='flex gap-3'>
-
-                                                                <div
-                                                                    onClick={() => { handleDeletes(z.id) }}
-                                                                    className='bg-green-500 py-1 px-3 rounded-lg'>Confirm</div>
-                                                                <div
-                                                                    onClick={() => { setDeleteLinks(null) }}
-                                                                    className='bg-red-500 py-1 px-3 rounded-lg'>Cancel</div>
-                                                            </div>
-                                                            :
-                                                            <div className='flex gap-3 flex-wrap'>
-                                                                <div
-                                                                    onClick={() => { setDeleteLinks(z.id) }}
-                                                                    className='bg-red-500 py-1 px-3 rounded-lg'>Delete</div>
-                                                                <div
-                                                                    onClick={() => { setIsRead(z); setIsID(z.id) }}
-                                                                    className='bg-green-500 py-1 px-3 rounded-lg'>Read</div>
-                                                                <div
-                                                                    onClick={() => { window.open(z.formats['text/html'], '_blank') }}
-                                                                    className='bg-blue-500 py-1 px-3 rounded-lg'>Visit</div>
-                                                                              <div
-                                                                    onClick={() => { setIsDownload(z.id); setIsRead(z) }}
-                                                                    className='bg-gray-500 py-1 px-3 rounded-lg'>Download</div>
-                                                            </div>
-                                                    }
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </>
-                                </div>
-                            ))
+                                                ))}
+                                            </>
+                                        </div>
+                                    ))
+                                }
+                            </>
                         ) : (
                             <div className='text-center h-full m-3'>
                                 No data available
+
                             </div>
                         )}
 
+                    </div>
+                }
+                {
+                    tabination === 'Computation' &&
+                    <div className='w-full overflow-auto'>
+                        {data && data.length > 0 ? (
+                            <>
+                                {
+                                    data.map((filteredItem) => (
+                                        <div key={filteredItem.id} className='grid grid-cols-1 p-5 gap-3 lg:grid-cols-3 md:grid-cols-2 overflow-auto'>
+                                            <>
+                                                {
+                                                    (!filteredItem?.MyComputationArr || filteredItem.MyComputationArr.length === 0) && (
+                                                        <div>No Data</div>
+                                                    )
+                                                }
+
+                                                {filteredItem?.MyComputationArr?.slice().reverse().map((z, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        className='cursor-pointer flex flex-col items-start gap-3 
+                                                                  bg-[#383636] text-white p-3 rounded-lg'>
+                                                        <div className='font-xl font-bold'>
+                                                            {getInputStringFromComputation(z.resultItem)}
+                                                        </div>
+
+                                                        <div className='mt-auto pt-3 flex gap-3 items-center justify-start'>
+                                                            <div className='bg-red-500 py-1 px-3 rounded-lg'>Delete</div>
+                                                            <div className='bg-green-500 py-1 px-3 rounded-lg'>View</div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </>
+                                        </div>
+                                    ))
+                                }
+                            </>
+                        ) : (
+                            <div className='text-center h-full m-3'>
+                                No data available
+
+                            </div>
+                        )}
                     </div>
                 }
             </div>
