@@ -16,6 +16,9 @@ import Home from './pages/Home';
 import ScrollToTop from './comp/ScrollToTop';
 import ForgotPass from './comp/ForgotPass';
 import ForgotPassword from './pages/ForgotPassword';
+import Computational from './pages/Computational';
+
+
 
 const App:React.FC= () => {
 
@@ -42,6 +45,10 @@ const App:React.FC= () => {
 
 
           <Route path='/citation-generator' element={<CitationGenerator />} />
+
+
+
+          <Route path='/computational-intelligence' element={<Computational />} />
         </Routes>
       </div>
     </Router>

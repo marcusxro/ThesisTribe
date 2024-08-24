@@ -66,15 +66,10 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee, locString }) => {
                 console.log(err)
             })
     }
-
     const [user, setUser] = isUser();
-
-
     useEffect(() => {
         console.log(user)
     }, [user])
-
-
 
 
     return (
@@ -194,6 +189,12 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee, locString }) => {
                             className={` ${locString === 'Book' && 'bg-gray-300'} text-black py-3 px-2 rounded-lgtext-lg
                             cursor-pointer flex gap-3 items-center hover:bg-gray-700 font-semibold hover:text-white 
                            text-center w-full rounded-lg`}><MdLibraryBooks />Books</div>
+                              <div
+                            onClick={() => { nav('/computational-intelligence/') }}
+                            className={` ${locString === 'Computational' && 'bg-gray-300'} text-black py-3 px-2 rounded-lgtext-lg
+                            cursor-pointer flex gap-3 items-center hover:bg-gray-700 font-semibold hover:text-white 
+                           text-center w-full rounded-lg`}><MdLibraryBooks />Computational</div>
+
                         {/* <div
                            className={` ${locString === 'About' && 'bg-gray-300'} text-black py-3 px-2 rounded-lgtext-lg
                            cursor-pointer flex gap-3 items-center hover:bg-gray-700 font-semibold hover:text-white 
