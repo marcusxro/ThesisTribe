@@ -11,6 +11,8 @@ import { IoIosLogOut } from "react-icons/io";
 import { MdArticle } from "react-icons/md";
 import { MdLibraryBooks } from "react-icons/md";
 import { MdCollectionsBookmark } from "react-icons/md";
+import { GiArtificialHive } from "react-icons/gi";
+import { IoIosSettings } from "react-icons/io";
 
 
 import { authKey } from '../firebase/FirebaseKey';
@@ -18,6 +20,7 @@ import { signOut } from 'firebase/auth';
 import { CiLogin } from "react-icons/ci";
 
 import isUser from './IsUser'
+import Settings from './settings/Settings';
 
 interface typeOfProps {
     inputSee: boolean,
@@ -72,8 +75,11 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee, locString }) => {
     }, [user])
 
 
+    const [openSettings, setOpenSettings] = useState<boolean>(false)
+
     return (
         <header className={`custom-pos py-5 ${inputSee && 'border-b-2 border-b-[#e6e6e6]'} ${bookSee && 'border-b-2 border-b-[#e6e6e6]'}`}>
+        
             <div className='flex gap-5 w-full max-w-[800px] items-center'>
                 <div onClick={() => { nav('/') }}
                     className={`font-bold text-1xl ${bookSee && 'hidden'} ${inputSee && 'hidden'}  flex items-center gap-1 cursor-pointer md:flex`}><FaSwatchbook />ThesisTribe</div>
@@ -170,7 +176,7 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee, locString }) => {
                         </div>
                     </div>
 
-                    <div className='flex flex-col w-full px-3 gap-1'>
+                    <div className='flex flex-col w-full pb-1 px-3 gap-1  border-b-gray-300 border-b-[2px]'>
                         <div className='px-2 text-[13px] text-gray-400 mt-2 mb-1'>
                             OVERVIEW
                         </div>
@@ -189,11 +195,11 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee, locString }) => {
                             className={` ${locString === 'Book' && 'bg-gray-300'} text-black py-3 px-2 rounded-lgtext-lg
                             cursor-pointer flex gap-3 items-center hover:bg-gray-700 font-semibold hover:text-white 
                            text-center w-full rounded-lg`}><MdLibraryBooks />Books</div>
-                              <div
+                        <div
                             onClick={() => { nav('/computational-intelligence/') }}
                             className={` ${locString === 'Computational' && 'bg-gray-300'} text-black py-3 px-2 rounded-lgtext-lg
                             cursor-pointer flex gap-3 items-center hover:bg-gray-700 font-semibold hover:text-white 
-                           text-center w-full rounded-lg`}><MdLibraryBooks />Computational</div>
+                           text-center w-full rounded-lg`}><GiArtificialHive />Computational</div>
 
                         {/* <div
                            className={` ${locString === 'About' && 'bg-gray-300'} text-black py-3 px-2 rounded-lgtext-lg
@@ -217,25 +223,37 @@ const Header: React.FC<typeOfProps> = ({ inputSee, bookSee, locString }) => {
                         }
 
                     </div>
-                    {
-                        user != null ?
 
-                            <div className='w-full mt-auto border-t-[1px] pt-3 border-t-gray-300 px-3'>
+                    <div className='w-full mt-auto mb-1 pt-3 px-3 border-t-gray-300 border-t-[2px]'>
+
+                        <div
+                        onClick={() => {
+                            nav("/settings")
+                        }}
+                            className={` ${locString === 'Settings' && 'bg-gray-300'}
+                                     text-black py-3 px-2 rounded-lg text-lg
+                                    cursor-pointer flex gap-3 items-center hover:bg-gray-700 font-semibold hover:text-white 
+                                   text-center w-full `}><IoIosSettings />Settings
+                        </div>
+
+                        {
+                            user != null ?
+
                                 <div
                                     onClick={() => { SignOutAccout() }}
                                     className=' text-red-800 font-semibold text-lg hover:text-white 
-                                    py-3 px-2 rounded-lg cursor-pointer  hover:bg-gray-700 
-                                    flex gap-3 items-center text-center'><IoIosLogOut />Log out</div>
-                            </div>
-                            :
-                            <div className='w-full mt-auto border-t-[1px] pt-3 border-t-gray-300 px-3'>
+
+                                        py-3 px-2 rounded-lg cursor-pointer  hover:bg-gray-700 
+                                        flex gap-3 items-center text-center'><IoIosLogOut />Log out</div>
+                                :
                                 <div
                                     onClick={() => { nav('/sign-in') }}
-                                    className={` ${locString === 'Signin' && 'bg-gray-300'} text-black py-3 px-2 rounded-lgtext-lg
-                            cursor-pointer flex gap-3 items-center hover:bg-gray-700 font-semibold hover:text-white 
-                           text-center w-full rounded-lg`}><CiLogin />Sign in</div>
-                            </div>
-                    }
+                                    className={` ${locString === 'Signin' && 'bg-gray-300'} text-black py-3 px-2 rounded-lg text-lg
+                                      cursor-pointer flex gap-3 items-center hover:bg-gray-700 font-semibold hover:text-white 
+                                         text-center w-full`}><CiLogin />Sign in</div>
+                        }
+                    </div>
+
                 </div>
             }
         </header>

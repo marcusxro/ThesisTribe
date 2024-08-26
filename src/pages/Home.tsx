@@ -39,10 +39,6 @@ const Home = () => {
 
 
     
-
-    console.log(process.env.REACT_APP_API_KEY)
-    
-
     return (
         <div className=''>
             <Header bookSee={false} inputSee={false} locString={'Home'} />

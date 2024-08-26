@@ -78,7 +78,7 @@ const SignInModal: React.FC<boolType> = ({ isDataSave }) => {
                         photoURL: user.photoURL,
                         uid: user.uid,
                     });
-
+                    localStorage.setItem('userPassword', password)
                 }
             }).catch((err) => {
                 console.log(err)

@@ -17,6 +17,7 @@ import ScrollToTop from './comp/ScrollToTop';
 import ForgotPass from './comp/ForgotPass';
 import ForgotPassword from './pages/ForgotPassword';
 import Computational from './pages/Computational';
+import Settings from './comp/settings/Settings';
 
 
 
@@ -49,6 +50,8 @@ const App:React.FC= () => {
 
 
           <Route path='/computational-intelligence' element={<Computational />} />
+
+          <Route path='/settings' element={<Settings />} />
         </Routes>
       </div>
     </Router>

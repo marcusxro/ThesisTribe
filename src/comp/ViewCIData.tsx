@@ -116,7 +116,7 @@ const ViewCIData: React.FC<propsData> = ({ params, closer }) => {
                     <div>{params && getInputStringFromComputation(params)}</div>
                 </div>
                 <div className='w-full h-full pt-4 bg-white px-3  flex gap-4 flex-col text-black pb-3'>
-                   <div className='w-full h-full overflow-auto'>
+                   <div className='w-full h-full overflow-auto pb-5'>
                    {renderXmlResult()}
                    </div>
                 </div>

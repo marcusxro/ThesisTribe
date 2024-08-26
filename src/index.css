@@ -118,8 +118,8 @@ code {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 100px; /* Adjust this height to control the fading area */
-  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 1)); /* Adjust color and opacity as needed */
+  height: 100px; 
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 1));
   pointer-events: none;
 }
 
@@ -161,6 +161,25 @@ code {
   padding: 10px;
 }
 
+.modalPoss {
+  position: fixed;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  z-index: 20000000;
+  transform: translate(-50%, -50%);
+  height: 100dvh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(53, 52, 52, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: 10px;
+}
+
+
 .modalPos embed::-webkit-scrollbar {
   display: none;
 }
@@ -178,4 +197,11 @@ code {
 .changeFont {
   color: #888;
   font-family: 'Times New Roman', Times, serif;
+}
+
+
+.buttonBlur {
+  box-shadow: 1px 3px 9px 0px rgba(0,0,0,0.75);
+-webkit-box-shadow: 1px 3px 9px 0px rgba(0,0,0,0.75);
+-moz-box-shadow: 1px 3px 9px 0px rgba(0,0,0,0.75);
 }
